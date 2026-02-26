@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nouk Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=gg+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #313338;
+    --bg-secondary: #2b2d31;
+    --bg-tertiary: #1e1f22;
+    --bg-hover: #35373c;
+    --bg-message-hover: #2e3035;
+    --accent: #5865f2;
+    --accent-hover: #4752c4;
+    --text-primary: #dbdee1;
+    --text-secondary: #b5bac1;
+    --text-muted: #80848e;
+    --text-link: #00a8fc;
+    --online: #23a55a;
+    --border: #3f4248;
+    --input-bg: #383a40;
+    --scrollbar: #202225;
+    --bot-tag: #5865f2;
+    --admin-tag: #f23f42;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Thai', 'gg Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    font-size: 15px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .server-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.1s;
+  }
+  .server-header:hover { background: var(--bg-hover); }
+
+  .channel-section {
+    padding: 16px 8px 4px;
+  }
+
+  .channel-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+
+  .channel-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 15px;
+    transition: background 0.1s, color 0.1s;
+    position: relative;
+  }
+  .channel-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .channel-item.active {
+    background: #404249;
+    color: var(--text-primary);
+  }
+  .channel-item .hash { color: var(--text-muted); font-size: 20px; line-height: 1; }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 8px;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
+  }
+  .user-avatar .status-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--online);
+    border: 2px solid var(--bg-tertiary);
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-status { font-size: 11px; color: var(--text-muted); }
+
+  /* MAIN CHAT */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    height: 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .chat-header .hash { color: var(--text-muted); font-size: 24px; }
+  .chat-header .channel-name { font-weight: 700; font-size: 15px; }
+  .chat-header .divider { width: 1px; height: 24px; background: var(--border); margin: 0 8px; }
+  .chat-header .channel-desc { color: var(--text-muted); font-size: 14px; }
+
+  /* MESSAGES */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .message-group {
+    display: flex;
+    padding: 2px 16px;
+    gap: 16px;
+    position: relative;
+    transition: background 0.05s;
+  }
+  .message-group:hover { background: var(--bg-message-hover); }
+
+  .message-group.first-in-group {
+    margin-top: 16px;
+    padding-top: 4px;
+  }
+
+  .avatar-col {
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .msg-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .msg-avatar.bot-avatar { background: var(--accent); }
+  .msg-avatar.user-avatar-msg { background: #ed4245; }
+
+  .timestamp-placeholder {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .small-timestamp {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: none;
+    white-space: nowrap;
+  }
+  .message-group:hover .small-timestamp { display: block; }
+
+  .message-content { flex: 1; min-width: 0; }
+
+  .message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+
+  .msg-username {
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .msg-username:hover { text-decoration: underline; }
+  .msg-username.bot-name { color: #c9cdfb; }
+  .msg-username.user-name-msg { color: #f28889; }
+
+  .bot-tag {
+    background: var(--bot-tag);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .admin-tag {
+    background: var(--admin-tag);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .msg-timestamp {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .msg-text {
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .msg-text.thinking {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .typing-dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: bounce 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+    40% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* INPUT */
+  .input-area {
+    padding: 0 16px 24px;
+    flex-shrink: 0;
+  }
+
+  .input-box {
+    background: var(--input-bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    padding: 0 16px;
+    min-height: 44px;
+  }
+
+  .input-box textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.4;
+    padding: 11px 0;
+    resize: none;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .input-box textarea::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px 0 8px 8px;
+    display: flex;
+    align-items: center;
+    transition: color 0.1s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover { color: var(--text-primary); }
+  .send-btn.active { color: var(--accent); }
+
+  /* MEMBER LIST */
+  .member-list {
+    width: 240px;
+    background: var(--bg-secondary);
+    padding: 16px 8px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .member-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .member-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .member-item:hover { background: var(--bg-hover); }
+
+  .member-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .member-avatar .dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-secondary);
+  }
+  .dot.online { background: var(--online); }
+  .dot.idle { background: #f0b232; }
+
+  .member-name { font-size: 14px; color: var(--text-secondary); }
+  .member-name.bot { color: #c9cdfb; }
+
+  /* API Status */
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+  .api-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--online);
+  }
+  .api-dot.warn { background: #f0b232; }
+  .api-dot.error { background: #f23f42; }
+
+  /* Welcome message */
+  .welcome {
+    padding: 16px 16px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .welcome h2 { font-size: 28px; margin-bottom: 4px; }
+  .welcome p { color: var(--text-muted); font-size: 14px; }
+
+  /* Model selector */
+  .model-selector {
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .model-selector select {
+    background: var(--input-bg);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="server-header">
+    🤖 Nouk AI Server
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+  </div>
+
+  <div class="channel-section">
+    <div class="channel-label">ข้อความ</div>
+    <div class="channel-item active">
+      <span class="hash">#</span> general
+    </div>
+    <div class="channel-item">
+      <span class="hash">#</span> random
+    </div>
+    <div class="channel-item">
+      <span class="hash">#</span> ai-chat
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-avatar" id="userAvatar">U
+      <div class="status-dot"></div>
+    </div>
+    <div class="user-info">
+      <div class="user-name" id="sidebarUsername">User</div>
+      <div class="user-status">Online</div>
+    </div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--text-muted)" style="cursor:pointer" title="Settings">
+      <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+    </svg>
+  </div>
+</div>
+
+<!-- MAIN CHAT -->
+<div class="main">
+  <div class="chat-header">
+    <span class="hash">#</span>
+    <span class="channel-name">general</span>
+    <div class="divider"></div>
+    <span class="channel-desc">คุยกับ AI ได้เลย</span>
+  </div>
+
+  <div class="api-status">
+    <div class="api-dot" id="apiDot"></div>
+    <span id="apiStatusText">กำลังเชื่อมต่อ...</span>
+  </div>
+
+  <div class="model-selector">
+    <span>โมเดล:</span>
+    <select id="modelSelect">
+      <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+      <option value="llama-3.1-8b-instant">Llama 3.1 8B (เร็ว)</option>
+      <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+      <option value="gemma2-9b-it">Gemma 2 9B</option>
+    </select>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="welcome">
+      <h2>👋 ยินดีต้อนรับ</h2>
+      <p>เริ่มต้นการสนทนากับ AI ได้เลยครับ</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-box">
+      <textarea
+        id="msgInput"
+        placeholder="ส่งข้อความหา #general"
+        rows="1"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MEMBER LIST -->
+<div class="member-list">
+  <div class="member-section-label">Online — 2</div>
+
+  <div class="member-item">
+    <div class="member-avatar" style="background: var(--accent);">
+      🤖
+      <div class="dot online"></div>
+    </div>
+    <div>
+      <div class="member-name bot" id="botNameDisplay">Nouk_Bot</div>
+      <div style="font-size:11px;color:var(--text-muted)">AI Assistant</div>
+    </div>
+  </div>
+
+  <div class="member-item">
+    <div class="member-avatar" style="background: #ed4245;" id="memberAvatar">U
+      <div class="dot online"></div>
+    </div>
+    <div>
+      <div class="member-name" id="memberName">User</div>
+      <div style="font-size:11px;color:var(--text-muted)">Admin</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = window.location.origin;
+let username = localStorage.getItem('username') || null;
+let messageHistory = [];
+let isTyping = false;
+
+// ขอชื่อผู้ใช้ถ้ายังไม่มี
+function askUsername() {
+  if (!username) {
+    username = prompt('ใส่ชื่อของคุณ:') || 'User';
+    localStorage.setItem('username', username);
+  }
+  document.getElementById('sidebarUsername').textContent = username;
+  document.getElementById('memberName').textContent = username;
+  document.getElementById('memberAvatar').textContent = username[0].toUpperCase();
+  document.getElementById('userAvatar').textContent = username[0].toUpperCase();
+}
+
+// เช็ค API status
+async function checkStatus() {
+  try {
+    const res = await fetch(`${API_URL}/status`);
+    const data = await res.json();
+    const dot = document.getElementById('apiDot');
+    const text = document.getElementById('apiStatusText');
+    if (data.ok) {
+      dot.className = 'api-dot';
+      text.textContent = `เชื่อมต่อแล้ว • API Key ${data.current_key}/${data.total_keys} • ${data.model}`;
+    } else {
+      dot.className = 'api-dot error';
+      text.textContent = 'เชื่อมต่อไม่ได้';
+    }
+  } catch {
+    document.getElementById('apiDot').className = 'api-dot error';
+    document.getElementById('apiStatusText').textContent = 'Server ออฟไลน์';
+  }
+}
+
+function getTime() {
+  return new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+}
+
+function addMessage(text, isBot, isTypingMsg = false) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message-group first-in-group';
+  if (isTypingMsg) div.id = 'typingMsg';
+
+  const name = isBot ? (localStorage.getItem('botName') || 'Nouk_Bot') : username;
+  const avatarClass = isBot ? 'bot-avatar' : 'user-avatar-msg';
+  const avatarText = isBot ? '🤖' : name[0].toUpperCase();
+  const nameClass = isBot ? 'bot-name' : 'user-name-msg';
+  const tag = isBot
+    ? '<span class="bot-tag">BOT</span>'
+    : '<span class="admin-tag">YOU</span>';
+
+  div.innerHTML = `
+    <div class="avatar-col">
+      <div class="msg-avatar ${avatarClass}">${avatarText}</div>
+    </div>
+    <div class="message-content">
+      <div class="message-header">
+        <span class="msg-username ${nameClass}">${name}</span>
+        ${tag}
+        <span class="msg-timestamp">วันนี้ เวลา ${getTime()}</span>
+      </div>
+      <div class="msg-text ${isTypingMsg ? 'thinking' : ''}" id="${isTypingMsg ? 'typingText' : ''}">
+        ${isTypingMsg ? '<div class="typing-dots"><span></span><span></span><span></span></div>' : escapeHtml(text)}
+      </div>
+    </div>
+  `;
+
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return div;
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+
+  const model = document.getElementById('modelSelect').value;
+
+  input.value = '';
+  autoResize(input);
+  addMessage(text, false);
+  messageHistory.push({ role: 'user', content: text });
+
+  isTyping = true;
+  const typingDiv = addMessage('', true, true);
+
+  try {
+    const res = await fetch(`${API_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        username: username,
+        history: messageHistory.slice(-14),
+        model: model
+      })
+    });
+
+    const data = await res.json();
+    typingDiv.remove();
+
+    if (data.reply) {
+      addMessage(data.reply, true);
+      messageHistory.push({ role: 'assistant', content: data.reply });
+      // อัพเดท API status
+      if (data.key_used) {
+        document.getElementById('apiStatusText').textContent =
+          `เชื่อมต่อแล้ว • API Key ${data.key_used} • ${model}`;
+      }
+    } else {
+      addMessage('เกิดข้อผิดพลาด: ' + (data.error || 'Unknown'), true);
+    }
+  } catch (e) {
+    typingDiv.remove();
+    addMessage('เชื่อมต่อ server ไม่ได้ครับ', true);
+  }
+
+  isTyping = false;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+  document.getElementById('sendBtn').className =
+    el.value.trim() ? 'send-btn active' : 'send-btn';
+}
+
+askUsername();
+checkStatus();
+setInterval(checkStatus, 30000);
+</script>
+</body>
+</html>

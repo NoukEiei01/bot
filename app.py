@@ -614,6 +614,164 @@ def admin_delete_user():
         return jsonify({"ok":True})
     except Exception as e: return jsonify({"error":str(e)}),500
 
+# ===== GROUPS =====
+def get_group(group_id):
+    if not supabase: return None
+    try:
+        res = supabase.table("groups").select("*").eq("id", group_id).execute()
+        return res.data[0] if res.data else None
+    except: return None
+
+def is_group_member(group_id, username):
+    if not supabase: return False
+    try:
+        res = supabase.table("group_members").select("username").eq("group_id", group_id).eq("username", username).execute()
+        return bool(res.data)
+    except: return False
+
+@app.route('/groups')
+def list_groups():
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not supabase: return jsonify({"groups":[]})
+    try:
+        res = supabase.table("group_members").select("group_id").eq("username", session['username']).execute()
+        ids = [r['group_id'] for r in (res.data or [])]
+        if not ids: return jsonify({"groups":[]})
+        grps = supabase.table("groups").select("*").in_("id", ids).execute()
+        return jsonify({"groups": grps.data or []})
+    except Exception as e: return jsonify({"groups":[], "error":str(e)})
+
+@app.route('/groups/create', methods=['POST'])
+def create_group():
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not supabase: return jsonify({"error":"No DB"}),500
+    data = request.json
+    name = (data.get('name','') or '').strip()
+    members = data.get('members', [])
+    if not name: return jsonify({"error":"ต้องใส่ชื่อกลุ่ม"}),400
+    try:
+        import uuid
+        gid = str(uuid.uuid4())[:8]
+        supabase.table("groups").insert({"id":gid,"name":name,"creator":session['username']}).execute()
+        all_members = list(set([session['username']] + [m for m in members if m]))
+        for m in all_members:
+            supabase.table("group_members").insert({"group_id":gid,"username":m}).execute()
+        supabase.table("group_messages").insert({"group_id":gid,"sender":"system","message":f"{session['username']} สร้างกลุ่ม"}).execute()
+        return jsonify({"ok":True,"group":{"id":gid,"name":name,"creator":session['username']}})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>')
+def get_group_info(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not is_group_member(gid, session['username']): return jsonify({"error":"ไม่ใช่สมาชิก"}),403
+    try:
+        g = get_group(gid)
+        members_res = supabase.table("group_members").select("username").eq("group_id",gid).execute()
+        members = [r['username'] for r in (members_res.data or [])]
+        return jsonify({"group": {**g, "members": members} if g else {}})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/messages')
+def group_messages(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not is_group_member(gid, session['username']): return jsonify({"error":"ไม่ใช่สมาชิก"}),403
+    try:
+        res = supabase.table("group_messages").select("*").eq("group_id",gid).order("created_at").limit(100).execute()
+        return jsonify({"messages": res.data or []})
+    except Exception as e: return jsonify({"messages":[], "error":str(e)})
+
+@app.route('/groups/<gid>/send', methods=['POST'])
+def group_send(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not is_group_member(gid, session['username']): return jsonify({"error":"ไม่ใช่สมาชิก"}),403
+    data = request.json
+    message = (data.get('message','') or '').strip()
+    reply_to = data.get('reply_to')
+    if not message: return jsonify({"error":"No message"}),400
+    try:
+        row = {"group_id":gid,"sender":session['username'],"message":message}
+        if reply_to: row["reply_to"] = str(reply_to)[:100]
+        supabase.table("group_messages").insert(row).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/invite', methods=['POST'])
+def group_invite(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    g = get_group(gid)
+    if not g: return jsonify({"error":"ไม่พบกลุ่ม"}),404
+    if g['creator'] != session['username'] and not session.get('is_admin'):
+        return jsonify({"error":"ไม่มีสิทธิ์"}),403
+    username = (request.json.get('username','') or '').strip()
+    if not username or not get_account(username): return jsonify({"error":"ไม่พบผู้ใช้"}),404
+    try:
+        if not is_group_member(gid, username):
+            supabase.table("group_members").insert({"group_id":gid,"username":username}).execute()
+            supabase.table("group_messages").insert({"group_id":gid,"sender":"system","message":f"{username} เข้าร่วมกลุ่ม"}).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/kick', methods=['POST'])
+def group_kick(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    g = get_group(gid)
+    if not g: return jsonify({"error":"ไม่พบกลุ่ม"}),404
+    if g['creator'] != session['username'] and not session.get('is_admin'):
+        return jsonify({"error":"ไม่มีสิทธิ์"}),403
+    username = (request.json.get('username','') or '').strip()
+    if username == g['creator']: return jsonify({"error":"ไล่ creator ไม่ได้"}),400
+    try:
+        supabase.table("group_members").delete().eq("group_id",gid).eq("username",username).execute()
+        supabase.table("group_messages").insert({"group_id":gid,"sender":"system","message":f"{username} ถูกเอาออก"}).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/leave', methods=['POST'])
+def group_leave(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    g = get_group(gid)
+    if not g: return jsonify({"error":"ไม่พบกลุ่ม"}),404
+    if g['creator'] == session['username']: return jsonify({"error":"Creator ออกไม่ได้ ต้องลบกลุ่มแทน"}),400
+    try:
+        supabase.table("group_members").delete().eq("group_id",gid).eq("username",session['username']).execute()
+        supabase.table("group_messages").insert({"group_id":gid,"sender":"system","message":f"{session['username']} ออกจากกลุ่ม"}).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/rename', methods=['POST'])
+def group_rename(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    g = get_group(gid)
+    if not g: return jsonify({"error":"ไม่พบกลุ่ม"}),404
+    if g['creator'] != session['username'] and not session.get('is_admin'):
+        return jsonify({"error":"ไม่มีสิทธิ์"}),403
+    name = (request.json.get('name','') or '').strip()
+    if not name: return jsonify({"error":"ต้องใส่ชื่อ"}),400
+    try:
+        supabase.table("groups").update({"name":name}).eq("id",gid).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/pin', methods=['POST'])
+def group_pin(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not is_group_member(gid, session['username']): return jsonify({"error":"ไม่ใช่สมาชิก"}),403
+    data = request.json
+    try:
+        supabase.table("groups").update({"pinned_msg": data.get('msg_text','')[:200]}).eq("id",gid).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/groups/<gid>/pins')
+def group_pins(gid):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    g = get_group(gid)
+    pins = []
+    if g and g.get('pinned_msg'):
+        pins = [{"text": g['pinned_msg']}]
+    return jsonify({"pins": pins})
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT",5000))
     print(f"Running on :{port} | {len(groq_keys)} key(s)")

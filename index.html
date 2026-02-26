@@ -2,340 +2,424 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Nouk Chat</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-primary: #313338;
-  --bg-secondary: #2b2d31;
-  --bg-tertiary: #1e1f22;
-  --bg-hover: #35373c;
-  --bg-msg-hover: #2e3035;
-  --accent: #5865f2;
-  --accent-hover: #4752c4;
-  --danger: #f23f42;
-  --success: #23a55a;
-  --warn: #f0b232;
-  --text-primary: #dbdee1;
-  --text-secondary: #b5bac1;
-  --text-muted: #80848e;
-  --border: #3f4248;
-  --input-bg: #383a40;
+  --dark: #020202;
+  --grey: grey;
+  --light: #ececec;
+  --color1: dodgerblue;
+  --color1-dark: rgb(28, 118, 207);
+  --color1-light: rgb(108, 181, 255);
+  --color2: mediumseagreen;
+  --color2-light: rgb(74, 228, 143);
+  --color2-dark: rgb(45, 133, 84);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Noto Sans Thai',sans-serif; background:var(--bg-primary); color:var(--text-primary); height:100vh; display:flex; overflow:hidden; font-size:15px; }
-::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#202225; border-radius:4px; }
 
-/* ===== AUTH SCREEN ===== */
-#authScreen {
-  position:fixed; inset:0; background:var(--bg-tertiary);
-  display:flex; align-items:center; justify-content:center; z-index:100;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: var(--light);
+  height: 100dvh;
+  overflow: hidden;
 }
-.auth-box {
-  background:var(--bg-secondary); border-radius:8px; padding:32px;
-  width:100%; max-width:400px; box-shadow:0 8px 32px rgba(0,0,0,0.5);
+
+#root {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 4rem 1fr;
 }
-.auth-box h1 { text-align:center; font-size:24px; margin-bottom:8px; }
-.auth-box p { text-align:center; color:var(--text-muted); margin-bottom:24px; font-size:14px; }
-.auth-tabs { display:flex; gap:0; margin-bottom:24px; background:var(--bg-tertiary); border-radius:6px; padding:4px; }
-.auth-tab { flex:1; padding:8px; text-align:center; border-radius:4px; cursor:pointer; font-size:14px; font-weight:600; color:var(--text-muted); transition:all 0.15s; }
-.auth-tab.active { background:var(--accent); color:white; }
-.form-group { margin-bottom:16px; }
-.form-group label { display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-secondary); margin-bottom:6px; }
-.form-group input { width:100%; background:var(--bg-tertiary); border:1px solid var(--border); border-radius:4px; padding:10px 12px; color:var(--text-primary); font-size:15px; font-family:inherit; outline:none; transition:border 0.15s; }
-.form-group input:focus { border-color:var(--accent); }
-.btn { width:100%; padding:11px; border-radius:4px; border:none; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; transition:background 0.15s; }
-.btn-primary { background:var(--accent); color:white; }
-.btn-primary:hover { background:var(--accent-hover); }
-.auth-error { color:var(--danger); font-size:13px; margin-bottom:12px; text-align:center; display:none; }
 
-/* ===== MAIN APP ===== */
-#app { display:none; width:100%; }
-
-/* SIDEBAR */
-.sidebar { width:240px; background:var(--bg-secondary); display:flex; flex-direction:column; flex-shrink:0; }
-.server-header { padding:16px; border-bottom:1px solid var(--border); font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:space-between; }
-.channel-section { padding:16px 8px 4px; }
-.channel-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.02em; padding:0 8px; margin-bottom:4px; }
-.channel-item { display:flex; align-items:center; gap:6px; padding:8px; border-radius:4px; cursor:pointer; color:var(--text-secondary); font-size:15px; transition:all 0.1s; }
-.channel-item:hover { background:var(--bg-hover); color:var(--text-primary); }
-.channel-item.active { background:#404249; color:var(--text-primary); }
-.channel-item .hash { color:var(--text-muted); font-size:20px; line-height:1; }
-
-.sidebar-bottom { margin-top:auto; padding:8px; background:var(--bg-tertiary); display:flex; align-items:center; gap:8px; }
-.s-avatar { width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:white; flex-shrink:0; position:relative; }
-.s-avatar .dot { position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background:var(--success); border:2px solid var(--bg-tertiary); }
-.s-name { font-size:13px; font-weight:600; }
-.s-tag { font-size:11px; color:var(--text-muted); }
-.icon-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); padding:4px; border-radius:4px; display:flex; transition:color 0.1s; }
-.icon-btn:hover { color:var(--text-primary); background:var(--bg-hover); }
-
-/* MAIN */
-.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-.chat-header { height:48px; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:8px; flex-shrink:0; }
-.chat-header .hash { color:var(--text-muted); font-size:24px; }
-.chat-header .ch-name { font-weight:700; }
-.chat-header .divider { width:1px; height:24px; background:var(--border); margin:0 8px; }
-.chat-header .ch-desc { color:var(--text-muted); font-size:14px; }
-
-.api-bar { display:flex; align-items:center; gap:8px; padding:5px 16px; font-size:12px; color:var(--text-muted); background:var(--bg-tertiary); border-bottom:1px solid var(--border); flex-wrap:wrap; }
-.api-dot { width:8px; height:8px; border-radius:50%; background:var(--success); flex-shrink:0; }
-.api-dot.warn { background:var(--warn); } .api-dot.err { background:var(--danger); }
-.model-sel { background:var(--input-bg); border:none; color:var(--text-secondary); font-size:12px; padding:3px 6px; border-radius:4px; cursor:pointer; outline:none; font-family:inherit; margin-left:auto; }
-
-.messages { flex:1; overflow-y:auto; padding:16px 0; display:flex; flex-direction:column; }
-.welcome-msg { padding:16px 16px 24px; border-bottom:1px solid var(--border); margin-bottom:8px; }
-.welcome-msg h2 { font-size:28px; margin-bottom:4px; }
-.welcome-msg p { color:var(--text-muted); font-size:14px; }
-
-.msg-group { display:flex; padding:2px 16px; gap:16px; position:relative; transition:background 0.05s; }
-.msg-group:hover { background:var(--bg-msg-hover); }
-.msg-group.first { margin-top:16px; padding-top:4px; }
-.avatar-col { width:40px; flex-shrink:0; }
-.msg-av { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:white; cursor:pointer; }
-.msg-av.bot { background:var(--accent); }
-.msg-av.user { background:var(--danger); }
-.small-ts { font-size:11px; color:var(--text-muted); display:none; white-space:nowrap; padding-top:4px; }
-.msg-group:hover .small-ts { display:block; }
-.msg-content { flex:1; min-width:0; }
-.msg-header { display:flex; align-items:baseline; gap:8px; margin-bottom:2px; }
-.msg-uname { font-weight:600; font-size:15px; cursor:pointer; }
-.msg-uname:hover { text-decoration:underline; }
-.msg-uname.bot { color:#c9cdfb; } .msg-uname.user { color:#f28889; }
-.tag { font-size:10px; font-weight:700; padding:1px 4px; border-radius:3px; text-transform:uppercase; }
-.tag.bot { background:var(--accent); color:white; }
-.tag.admin { background:var(--danger); color:white; }
-.tag.you { background:#3ba55d; color:white; }
-.msg-ts { font-size:12px; color:var(--text-muted); }
-.msg-text { color:var(--text-primary); line-height:1.5; word-break:break-word; white-space:pre-wrap; }
-.msg-text.thinking { color:var(--text-muted); font-style:italic; }
-.typing-dots { display:inline-flex; gap:4px; align-items:center; }
-.typing-dots span { width:6px; height:6px; border-radius:50%; background:var(--text-muted); animation:bounce 1.2s infinite; }
-.typing-dots span:nth-child(2) { animation-delay:.2s; } .typing-dots span:nth-child(3) { animation-delay:.4s; }
-@keyframes bounce { 0%,80%,100% { transform:translateY(0); opacity:.4; } 40% { transform:translateY(-5px); opacity:1; } }
-
-.input-area { padding:0 16px 24px; flex-shrink:0; }
-.input-box { background:var(--input-bg); border-radius:8px; display:flex; align-items:flex-end; padding:0 16px; }
-.input-box textarea { flex:1; background:transparent; border:none; outline:none; color:var(--text-primary); font-family:inherit; font-size:15px; line-height:1.4; padding:11px 0; resize:none; max-height:200px; overflow-y:auto; }
-.input-box textarea::placeholder { color:var(--text-muted); }
-.send-btn { background:none; border:none; cursor:pointer; color:var(--text-muted); padding:8px 0 8px 8px; display:flex; align-items:center; transition:color 0.1s; flex-shrink:0; }
-.send-btn:hover,.send-btn.active { color:var(--accent); }
-
-/* MEMBER LIST */
-.member-list { width:240px; background:var(--bg-secondary); padding:16px 8px; overflow-y:auto; flex-shrink:0; }
-.member-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.02em; padding:0 8px; margin-bottom:8px; }
-.member-item { display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:4px; cursor:pointer; transition:background 0.1s; }
-.member-item:hover { background:var(--bg-hover); }
-.m-av { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:white; position:relative; flex-shrink:0; }
-.m-av .dot { position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; border:2px solid var(--bg-secondary); background:var(--success); }
-.m-name { font-size:14px; color:var(--text-secondary); }
-.m-name.bot { color:#c9cdfb; }
-
-/* ADMIN PANEL */
-#adminPanel {
-  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:50;
-  display:none; align-items:center; justify-content:center;
+/* ===== AUTH OVERLAY ===== */
+#authOverlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
 }
-.admin-box {
-  background:var(--bg-secondary); border-radius:8px; padding:24px;
-  width:100%; max-width:600px; max-height:80vh; display:flex; flex-direction:column;
+.auth-card {
+  background: white; border-radius: 12px; padding: 28px 24px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
-.admin-box h2 { font-size:20px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
-.admin-table { width:100%; border-collapse:collapse; font-size:14px; overflow-y:auto; }
-.admin-table th { text-align:left; padding:8px; color:var(--text-muted); font-size:11px; text-transform:uppercase; border-bottom:1px solid var(--border); }
-.admin-table td { padding:8px; border-bottom:1px solid var(--border); }
-.btn-sm { padding:4px 10px; font-size:12px; border-radius:4px; border:none; cursor:pointer; font-family:inherit; }
-.btn-danger { background:var(--danger); color:white; }
-.btn-warn { background:var(--warn); color:#000; }
-.btn-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px; }
-.btn-close:hover { color:var(--text-primary); }
+.auth-card h2 { font-size: 22px; margin-bottom: 6px; color: var(--dark); }
+.auth-card p { font-size: 13px; color: var(--grey); margin-bottom: 20px; }
+.auth-tabs {
+  display: flex; background: var(--light); border-radius: 8px;
+  padding: 4px; margin-bottom: 20px; gap: 4px;
+}
+.auth-tab {
+  flex: 1; padding: 8px; text-align: center; border-radius: 6px;
+  cursor: pointer; font-size: 14px; font-weight: 600; color: var(--grey);
+  transition: all 0.15s;
+}
+.auth-tab.active { background: var(--color1); color: white; }
+.auth-field { margin-bottom: 14px; }
+.auth-field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.auth-field input {
+  width: 100%; padding: 11px 12px; border: 1.5px solid #ddd;
+  border-radius: 8px; font-size: 16px; font-family: inherit;
+  outline: none; transition: border 0.15s; background: #fafafa;
+}
+.auth-field input:focus { border-color: var(--color1); background: white; }
+.auth-error { color: #e53e3e; font-size: 13px; margin-bottom: 12px; display: none; }
+.auth-submit {
+  width: 100%; padding: 12px; background: var(--color1); color: white;
+  border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.15s;
+}
+.auth-submit:hover { background: var(--color1-dark); }
+.auth-submit:active { transform: scale(0.98); }
+
+/* ===== HEADER ===== */
+header {
+  padding: 0 1rem;
+  color: var(--light);
+  background: var(--color1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.main-title { margin: 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+nav ul { list-style: none; display: flex; gap: 8px; align-items: center; }
+nav ul li a {
+  color: white; text-decoration: none; font-size: 13px;
+  background: rgba(255,255,255,0.2); padding: 5px 10px;
+  border-radius: 6px; white-space: nowrap;
+}
+nav ul li a:hover { background: rgba(255,255,255,0.3); }
+.admin-nav-btn {
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  font-family: inherit;
+}
+.admin-nav-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* ===== MAIN VIEW ===== */
+.main-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  position: relative;
+}
+
+/* toggle for mobile sidebar */
+#toggle { display: none; }
+label[for="toggle"] {
+  display: none;
+  position: absolute; top: 10px; left: 10px; z-index: 10;
+  background: var(--color1); color: white; padding: 6px 12px;
+  border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ===== CHAT ROOMS SIDEBAR ===== */
+.chat-rooms {
+  background: white;
+  border-right: 1px solid #ddd;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.new-chatroom-form {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.new-chatroom-form label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--grey); letter-spacing: 0.04em; }
+.new-chatroom-form input[type="text"] {
+  padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 6px;
+  font-size: 14px; font-family: inherit; outline: none;
+}
+.new-chatroom-form input[type="text"]:focus { border-color: var(--color1); }
+.new-chatroom-form input[type="submit"] {
+  padding: 8px; background: var(--color2); color: white; border: none;
+  border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.new-chatroom-form input[type="submit"]:hover { background: var(--color2-dark); }
+.chat-rooms ul { list-style: none; overflow-y: auto; flex: 1; padding: 8px; }
+.chat-rooms ul li a {
+  display: block; padding: 10px 12px; border-radius: 8px;
+  color: var(--dark); text-decoration: none; font-size: 14px;
+  transition: background 0.1s;
+}
+.chat-rooms ul li a:hover { background: var(--light); }
+.chat-rooms ul li.selected a { background: var(--color1); color: white; font-weight: 600; }
+
+/* ===== MAIN CHAT ===== */
+.chat {
+  display: flex; flex-direction: column;
+  overflow: hidden; background: var(--light);
+  position: relative;
+}
+
+.messages-container {
+  flex: 1; overflow-y: auto; padding: 12px;
+  list-style: none; display: flex; flex-direction: column; gap: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* System messages */
+.messages-container li.system {
+  text-align: center; padding: 4px 0;
+}
+.messages-container li.system .content {
+  display: inline-block; background: rgba(0,0,0,0.06);
+  padding: 4px 12px; border-radius: 12px; font-size: 12px; color: var(--grey);
+}
+.messages-container li.system .time-stamp { display: none; }
+
+/* Normal messages */
+.messages-container li { display: flex; flex-direction: column; max-width: 80%; }
+.messages-container li.mine { align-self: flex-end; align-items: flex-end; }
+.messages-container li:not(.mine):not(.system) { align-self: flex-start; align-items: flex-start; }
+
+.sender {
+  font-size: 11px; font-weight: 700; color: var(--color1);
+  margin-bottom: 2px; padding: 0 4px;
+}
+.mine .sender { color: var(--color2-dark); }
+.bot-label .sender { color: var(--color1-dark); }
+
+.content {
+  padding: 9px 13px; border-radius: 18px; font-size: 15px;
+  line-height: 1.4; word-break: break-word; white-space: pre-wrap;
+}
+li:not(.mine):not(.system) .content {
+  background: white; color: var(--dark);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+li.mine .content {
+  background: var(--color1); color: white;
+  border-bottom-right-radius: 4px;
+}
+li.bot-msg .content {
+  background: white; color: var(--dark);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-left: 3px solid var(--color1);
+}
+
+.time-stamp { font-size: 11px; color: var(--grey); margin-top: 2px; padding: 0 4px; }
+
+/* Typing indicator */
+.typing-bubble .content {
+  background: white;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 12px 16px;
+}
+.typing-dots { display: flex; gap: 4px; align-items: center; }
+.typing-dots span {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--grey);
+  animation: bounce 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: .2s; }
+.typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,80%,100% { transform:translateY(0);opacity:.4; } 40% { transform:translateY(-5px);opacity:1; } }
+
+/* ===== MESSAGE INPUT ===== */
+.message-form {
+  display: flex; gap: 8px; padding: 10px 12px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: white; border-top: 1px solid #ddd;
+  align-items: flex-end;
+}
+.message-form textarea {
+  flex: 1; border: 1.5px solid #ddd; border-radius: 20px;
+  padding: 9px 14px; font-size: 16px; font-family: inherit;
+  resize: none; outline: none; line-height: 1.4;
+  max-height: 120px; overflow-y: auto;
+  transition: border 0.15s; background: #fafafa;
+}
+.message-form textarea:focus { border-color: var(--color1); background: white; }
+.message-form textarea::placeholder { color: #aaa; }
+.send-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--color1); color: white; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: background 0.15s, transform 0.1s;
+}
+.send-btn:hover { background: var(--color1-dark); }
+.send-btn:active { transform: scale(0.9); }
+.send-btn:disabled { background: #ccc; cursor: default; }
+
+/* API status bar */
+.status-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px; background: #f0f0f0; border-bottom: 1px solid #ddd;
+  font-size: 11px; color: var(--grey);
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color2); flex-shrink: 0; }
+.status-dot.err { background: #e53e3e; }
+.model-sel {
+  background: white; border: 1px solid #ddd; color: #555;
+  font-size: 11px; padding: 2px 6px; border-radius: 4px;
+  cursor: pointer; outline: none; font-family: inherit; margin-left: auto;
+}
+
+/* ===== ADMIN MODAL ===== */
+#adminModal {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.5);
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.admin-card {
+  background: white; border-radius: 12px; padding: 20px;
+  width: 100%; max-width: 500px; max-height: 80dvh;
+  display: flex; flex-direction: column;
+}
+.admin-card h3 { font-size: 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.admin-card .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--grey); }
+.user-list { overflow-y: auto; flex: 1; }
+.user-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid #eee; gap: 8px;
+}
+.user-row:last-child { border-bottom: none; }
+.user-row .uname { font-weight: 600; font-size: 14px; flex: 1; }
+.user-row .role { font-size: 12px; color: var(--grey); }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; font-family: inherit; font-weight: 600; }
+.btn-warn { background: #ffc107; color: #000; }
+.btn-danger { background: #e53e3e; color: white; }
+
+/* ===== DESKTOP LAYOUT ===== */
+@media (min-width: 600px) {
+  .main-view { grid-template-columns: 220px 1fr; }
+  label[for="toggle"] { display: none !important; }
+  .chat-rooms { display: flex !important; position: static !important; }
+}
 
 /* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  body { height: 100dvh; }
-
-  /* ซ่อน sidebar และ member list บนมือถือ */
-  .sidebar { display:none; }
-  .member-list { display:none; }
-
-  /* main เต็มจอ */
-  #app { flex-direction:column; }
-  .main { width:100%; height:100dvh; }
-
-  /* header เล็กลง */
-  .chat-header { height:44px; padding:0 12px; }
-
-  /* api bar */
-  .api-bar { padding:4px 12px; font-size:11px; }
-  .model-sel { font-size:11px; }
-
-  /* messages */
-  .messages { padding:8px 0; }
-  .msg-group { padding:2px 10px; gap:10px; }
-  .msg-av { width:34px; height:34px; font-size:14px; }
-  .avatar-col { width:34px; }
-  .msg-uname { font-size:14px; }
-  .msg-text { font-size:14px; }
-
-  /* input area - fix keyboard push */
-  .input-area {
-    padding:8px 10px 12px;
-    padding-bottom: env(safe-area-inset-bottom, 12px);
+@media (max-width: 599px) {
+  label[for="toggle"] { display: block; }
+  .chat-rooms {
+    display: none;
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: 75%; z-index: 20;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.15);
   }
-  .input-box { border-radius:20px; padding:0 12px; }
-  .input-box textarea { font-size:16px; padding:10px 0; } /* 16px ป้องกัน zoom */
-  .send-btn { padding:8px 0 8px 8px; }
-
-  /* auth box */
-  .auth-box { padding:24px 20px; margin:16px; border-radius:12px; }
-
-  /* admin panel */
-  .admin-box { margin:16px; max-height:90vh; padding:16px; }
-  .admin-table { font-size:12px; }
+  #toggle:checked ~ .chat-rooms { display: flex; }
+  .messages-container li { max-width: 90%; }
 }
 </style>
 </head>
 <body>
 
 <!-- AUTH -->
-<div id="authScreen">
-  <div class="auth-box">
-    <h1>👋 ยินดีต้อนรับ</h1>
-    <p>เข้าสู่ระบบเพื่อคุยกับ AI</p>
+<div id="authOverlay">
+  <div class="auth-card">
+    <h2>👋 ยินดีต้อนรับ</h2>
+    <p>เข้าสู่ระบบเพื่อเริ่มแชท</p>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchTab('login')">เข้าสู่ระบบ</div>
       <div class="auth-tab" onclick="switchTab('register')">สมัครสมาชิก</div>
     </div>
-    <div class="auth-error" id="authError"></div>
-    <div class="form-group">
+    <div class="auth-error" id="authErr"></div>
+    <div class="auth-field">
       <label>ชื่อผู้ใช้</label>
-      <input type="text" id="authUsername" placeholder="ชื่อผู้ใช้" autocomplete="username">
+      <input type="text" id="authUser" placeholder="ชื่อผู้ใช้" autocomplete="username">
     </div>
-    <div class="form-group">
+    <div class="auth-field">
       <label>รหัสผ่าน</label>
-      <input type="password" id="authPassword" placeholder="รหัสผ่าน" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
+      <input type="password" id="authPass" placeholder="รหัสผ่าน" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
     </div>
-    <button class="btn btn-primary" onclick="doAuth()" id="authBtn">เข้าสู่ระบบ</button>
+    <button class="auth-submit" id="authBtn" onclick="doAuth()">เข้าสู่ระบบ</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="app">
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="server-header">
-      🤖 Nouk AI Server
-    </div>
-    <div class="channel-section">
-      <div class="channel-label">ข้อความ</div>
-      <div class="channel-item active"><span class="hash">#</span> general</div>
-      <div class="channel-item"><span class="hash">#</span> random</div>
-      <div class="channel-item"><span class="hash">#</span> ai-chat</div>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="s-avatar" id="sAvatar">U<div class="dot"></div></div>
-      <div style="flex:1;min-width:0">
-        <div class="s-name" id="sName">User</div>
-        <div class="s-tag" id="sTag">Online</div>
-      </div>
-      <button class="icon-btn" id="adminBtn" onclick="openAdmin()" style="display:none" title="Admin Panel">
-        ⚙️
-      </button>
-      <button class="icon-btn" onclick="doLogout()" title="ออกจากระบบ">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-      </button>
-    </div>
+<!-- ADMIN MODAL -->
+<div id="adminModal">
+  <div class="admin-card">
+    <h3>⚙️ Admin Panel <button class="close-btn" onclick="closeAdmin()">✕</button></h3>
+    <div class="user-list" id="userList"></div>
   </div>
+</div>
 
-  <!-- MAIN CHAT -->
-  <div class="main">
-    <div class="chat-header">
-      <span class="hash">#</span>
-      <span class="ch-name">general</span>
-      <div class="divider"></div>
-      <span class="ch-desc">คุยกับ AI ได้เลย</span>
-    </div>
-    <div class="api-bar">
-      <div class="api-dot" id="apiDot"></div>
-      <span id="apiText">กำลังเชื่อมต่อ...</span>
-      <select class="model-sel" id="modelSel">
-        <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-        <option value="llama-3.1-8b-instant">Llama 3.1 8B (เร็ว)</option>
-        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-        <option value="gemma2-9b-it">Gemma 2 9B</option>
-      </select>
-    </div>
-    <div class="messages" id="messages">
-      <div class="welcome-msg">
-        <h2>👋 ยินดีต้อนรับ</h2>
-        <p>เริ่มต้นการสนทนากับ AI ได้เลยครับ</p>
+<div id="root">
+  <header>
+    <h1 class="main-title" id="headerTitle">Nouk Chat</h1>
+    <nav>
+      <ul>
+        <li id="adminNavItem" style="display:none"><button class="admin-nav-btn" onclick="openAdmin()">⚙️ Admin</button></li>
+        <li><a href="#" onclick="doLogout();return false;" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="main-view">
+    <label for="toggle">☰ Rooms</label>
+    <input id="toggle" type="checkbox">
+
+    <aside class="chat-rooms">
+      <form class="new-chatroom-form" onsubmit="createRoom(event)">
+        <label for="new-chat">สร้างห้องใหม่</label>
+        <input type="text" id="new-chat" placeholder="ชื่อห้อง">
+        <input type="submit" value="สร้าง">
+      </form>
+      <ul id="roomList"></ul>
+    </aside>
+
+    <main class="chat">
+      <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">กำลังเชื่อมต่อ...</span>
+        <select class="model-sel" id="modelSel">
+          <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+          <option value="llama-3.1-8b-instant">Llama 3.1 8B ⚡</option>
+          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+          <option value="gemma2-9b-it">Gemma 2 9B</option>
+        </select>
       </div>
-    </div>
-    <div class="input-area">
-      <div class="input-box">
-        <textarea id="msgInput" placeholder="ส่งข้อความหา #general" rows="1"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+
+      <ul class="messages-container" id="messages"></ul>
+
+      <form class="message-form" onsubmit="sendMsg(event)">
+        <textarea
+          id="msgInput"
+          placeholder="พิมพ์ข้อความ..."
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button type="submit" class="send-btn" id="sendBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MEMBER LIST -->
-  <div class="member-list">
-    <div class="member-label">Online</div>
-    <div class="member-item">
-      <div class="m-av" style="background:var(--accent)">🤖<div class="dot"></div></div>
-      <div>
-        <div class="m-name bot" id="botNameDisplay">Nouk_Bot</div>
-        <div style="font-size:11px;color:var(--text-muted)">AI</div>
-      </div>
-    </div>
-    <div class="member-item">
-      <div class="m-av" style="background:var(--danger)" id="memberAv">U<div class="dot"></div></div>
-      <div>
-        <div class="m-name" id="memberName">User</div>
-        <div style="font-size:11px;color:var(--text-muted)" id="memberRole">Member</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="adminPanel">
-  <div class="admin-box">
-    <h2>⚙️ Admin Panel <button class="btn-close" onclick="closeAdmin()">✕</button></h2>
-    <div style="overflow-y:auto;flex:1">
-      <table class="admin-table">
-        <thead><tr><th>Username</th><th>Admin</th><th>Actions</th></tr></thead>
-        <tbody id="userTable"></tbody>
-      </table>
-    </div>
-  </div>
+      </form>
+    </main>
+  </section>
 </div>
 
 <script>
 const API = window.location.origin;
-let currentUser = null;
-let msgHistory = [];
-let isTyping = false;
+let me = null;
 let authMode = 'login';
+let rooms = JSON.parse(localStorage.getItem('rooms') || '["general","random"]');
+let currentRoom = 'general';
+let histories = {};
+let isTyping = false;
+let botName = 'Nouk_Bot';
 
+// ===== AUTH =====
 function switchTab(mode) {
   authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&mode==='login')||(i===1&&mode==='register')));
-  document.getElementById('authBtn').textContent = mode === 'login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
-  document.getElementById('authError').style.display = 'none';
+  document.querySelectorAll('.auth-tab').forEach((t,i) => {
+    t.classList.toggle('active', (i===0&&mode==='login')||(i===1&&mode==='register'));
+  });
+  document.getElementById('authBtn').textContent = mode==='login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+  document.getElementById('authErr').style.display = 'none';
 }
 
 async function doAuth() {
-  const username = document.getElementById('authUsername').value.trim();
-  const password = document.getElementById('authPassword').value.trim();
-  const errEl = document.getElementById('authError');
+  const username = document.getElementById('authUser').value.trim();
+  const password = document.getElementById('authPass').value.trim();
+  const errEl = document.getElementById('authErr');
   errEl.style.display = 'none';
-  if (!username || !password) { errEl.textContent = 'กรุณากรอกข้อมูล'; errEl.style.display='block'; return; }
+  if (!username || !password) { errEl.textContent='กรุณากรอกข้อมูล'; errEl.style.display='block'; return; }
   try {
     const res = await fetch(`${API}/${authMode}`, {
       method:'POST', credentials:'include',
@@ -343,201 +427,237 @@ async function doAuth() {
       body: JSON.stringify({username, password})
     });
     const data = await res.json();
-    if (data.ok) {
-      currentUser = data;
-      showApp();
-    } else {
-      errEl.textContent = data.error || 'เกิดข้อผิดพลาด';
-      errEl.style.display = 'block';
-    }
-  } catch {
-    errEl.textContent = 'เชื่อมต่อ server ไม่ได้';
-    errEl.style.display = 'block';
-  }
+    if (data.ok) { me = data; initApp(); }
+    else { errEl.textContent=data.error||'เกิดข้อผิดพลาด'; errEl.style.display='block'; }
+  } catch { errEl.textContent='เชื่อมต่อไม่ได้'; errEl.style.display='block'; }
 }
 
 async function doLogout() {
   await fetch(`${API}/logout`, {method:'POST', credentials:'include'});
-  currentUser = null;
-  msgHistory = [];
-  document.getElementById('messages').innerHTML = `
-    <div class="welcome-msg"><h2>👋 ยินดีต้อนรับ</h2><p>เริ่มต้นการสนทนากับ AI ได้เลยครับ</p></div>`;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'flex';
+  me = null; histories = {};
+  document.getElementById('authOverlay').style.display = 'flex';
+  document.getElementById('messages').innerHTML = '';
 }
 
-function showApp() {
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('sName').textContent = currentUser.username;
-  document.getElementById('sAvatar').textContent = currentUser.username[0].toUpperCase();
-  document.getElementById('memberName').textContent = currentUser.username;
-  document.getElementById('memberAv').textContent = currentUser.username[0].toUpperCase();
-  if (currentUser.is_admin) {
-    document.getElementById('sTag').textContent = '👑 Admin';
-    document.getElementById('memberRole').textContent = 'Admin';
-    document.getElementById('adminBtn').style.display = 'flex';
-  }
+// ===== INIT =====
+function initApp() {
+  document.getElementById('authOverlay').style.display = 'none';
+  document.getElementById('logoutBtn').textContent = `Logout "${me.username}"`;
+  if (me.is_admin) document.getElementById('adminNavItem').style.display = '';
+  renderRooms();
+  selectRoom('general');
   checkStatus();
 }
 
-async function checkStatus() {
-  try {
-    const res = await fetch(`${API}/status`, {credentials:'include'});
-    const data = await res.json();
-    const dot = document.getElementById('apiDot');
-    const text = document.getElementById('apiText');
-    if (data.ok) {
-      dot.className = 'api-dot';
-      text.textContent = `เชื่อมต่อแล้ว • Key ${data.current_key}/${data.total_keys}`;
-      document.getElementById('botNameDisplay').textContent = data.bot_name || 'Nouk_Bot';
-    } else {
-      dot.className = 'api-dot err';
-      text.textContent = 'เชื่อมต่อไม่ได้';
-    }
-  } catch {
-    document.getElementById('apiDot').className = 'api-dot err';
-    document.getElementById('apiText').textContent = 'Server ออฟไลน์';
-  }
+// ===== ROOMS =====
+function renderRooms() {
+  const ul = document.getElementById('roomList');
+  ul.innerHTML = '';
+  rooms.forEach(r => {
+    const li = document.createElement('li');
+    li.className = r === currentRoom ? 'selected' : '';
+    li.innerHTML = `<a href="#" onclick="selectRoom('${r}');return false;">${r}</a>`;
+    ul.appendChild(li);
+  });
+}
+
+function selectRoom(room) {
+  currentRoom = room;
+  document.getElementById('toggle').checked = false;
+  document.getElementById('headerTitle').textContent = `# ${room}`;
+  renderRooms();
+  renderMessages(room);
+}
+
+function createRoom(e) {
+  e.preventDefault();
+  const input = document.getElementById('new-chat');
+  const name = input.value.trim().replace(/\s+/g,'-').toLowerCase();
+  if (!name || rooms.includes(name)) return;
+  rooms.push(name);
+  localStorage.setItem('rooms', JSON.stringify(rooms));
+  input.value = '';
+  renderRooms();
+  selectRoom(name);
+}
+
+// ===== MESSAGES =====
+function renderMessages(room) {
+  const ul = document.getElementById('messages');
+  ul.innerHTML = '';
+  const msgs = histories[room] || [];
+  msgs.forEach(m => appendBubble(m.role, m.content, false));
+  ul.scrollTop = ul.scrollHeight;
 }
 
 function getTime() {
   return new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
 }
 
+function appendBubble(role, text, scroll=true) {
+  const ul = document.getElementById('messages');
+  const li = document.createElement('li');
+
+  if (role === 'user') {
+    li.className = 'mine';
+    li.innerHTML = `
+      <div class="sender">${me.username}</div>
+      <div class="content">${escHtml(text)}</div>
+      <div class="time-stamp">${getTime()}</div>`;
+  } else if (role === 'assistant') {
+    li.className = 'bot-msg';
+    li.innerHTML = `
+      <div class="sender">${botName}</div>
+      <div class="content">${escHtml(text)}</div>
+      <div class="time-stamp">${getTime()}</div>`;
+  } else if (role === 'typing') {
+    li.className = 'typing-bubble';
+    li.id = 'typingBubble';
+    li.innerHTML = `
+      <div class="sender">${botName}</div>
+      <div class="content"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  }
+
+  ul.appendChild(li);
+  if (scroll) ul.scrollTop = ul.scrollHeight;
+  return li;
+}
+
 function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
 }
 
-function addMsg(text, isBot, isThinking=false) {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg-group first';
-  if (isThinking) div.id = 'thinkingMsg';
-
-  const botName = document.getElementById('botNameDisplay').textContent;
-  const name = isBot ? botName : currentUser.username;
-  const avClass = isBot ? 'bot' : 'user';
-  const avText = isBot ? '🤖' : name[0].toUpperCase();
-  const nameClass = isBot ? 'bot' : 'user';
-  const tag = isBot
-    ? '<span class="tag bot">BOT</span>'
-    : (currentUser.is_admin ? '<span class="tag admin">ADMIN</span>' : '<span class="tag you">YOU</span>');
-
-  div.innerHTML = `
-    <div class="avatar-col"><div class="msg-av ${avClass}">${avText}</div></div>
-    <div class="msg-content">
-      <div class="msg-header">
-        <span class="msg-uname ${nameClass}">${name}</span>
-        ${tag}
-        <span class="msg-ts">วันนี้ ${getTime()}</span>
-      </div>
-      <div class="msg-text ${isThinking?'thinking':''}">
-        ${isThinking ? '<div class="typing-dots"><span></span><span></span><span></span></div>' : escHtml(text)}
-      </div>
-    </div>`;
-
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
-}
-
-async function sendMessage() {
+// ===== SEND =====
+async function sendMsg(e) {
+  e.preventDefault();
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text || isTyping) return;
   const model = document.getElementById('modelSel').value;
-  input.value = '';
-  autoResize(input);
-  document.getElementById('sendBtn').className = 'send-btn';
-  addMsg(text, false);
-  msgHistory.push({role:'user', content:text});
+
+  input.value = ''; autoResize(input);
+  document.getElementById('sendBtn').disabled = true;
+
+  if (!histories[currentRoom]) histories[currentRoom] = [];
+  histories[currentRoom].push({role:'user', content:text});
+  appendBubble('user', text);
   isTyping = true;
-  const thinking = addMsg('', true, true);
+  appendBubble('typing', '');
+
   try {
     const res = await fetch(`${API}/chat`, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({message:text, history:msgHistory.slice(-14), model})
+      body: JSON.stringify({
+        message: text,
+        history: histories[currentRoom].slice(-14),
+        model,
+        room: currentRoom
+      })
     });
     const data = await res.json();
-    thinking.remove();
+    document.getElementById('typingBubble')?.remove();
+
     if (data.reply) {
-      addMsg(data.reply, true);
-      msgHistory.push({role:'assistant', content:data.reply});
+      histories[currentRoom].push({role:'assistant', content:data.reply});
+      appendBubble('assistant', data.reply);
       if (data.key_used) {
-        document.getElementById('apiText').textContent = `เชื่อมต่อแล้ว • Key ${data.key_used}/${data.total_keys}`;
+        document.getElementById('statusText').textContent = `เชื่อมต่อแล้ว • Key ${data.key_used}/${data.total_keys}`;
       }
     } else if (data.error === 'กรุณา login ก่อน') {
       doLogout();
     } else {
-      addMsg('เกิดข้อผิดพลาด: ' + (data.error || 'Unknown'), true);
+      appendBubble('assistant', '⚠️ ' + (data.error || 'เกิดข้อผิดพลาด'));
     }
   } catch {
-    thinking.remove();
-    addMsg('เชื่อมต่อ server ไม่ได้', true);
+    document.getElementById('typingBubble')?.remove();
+    appendBubble('assistant', '⚠️ เชื่อมต่อ server ไม่ได้');
   }
+
   isTyping = false;
+  document.getElementById('sendBtn').disabled = false;
 }
 
 function handleKey(e) {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); document.querySelector('.message-form').dispatchEvent(new Event('submit')); }
 }
 
 function autoResize(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
-  document.getElementById('sendBtn').className = el.value.trim() ? 'send-btn active' : 'send-btn';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
-// ADMIN
+// ===== STATUS =====
+async function checkStatus() {
+  try {
+    const res = await fetch(`${API}/status`, {credentials:'include'});
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('statusDot').className = 'status-dot';
+      document.getElementById('statusText').textContent = `เชื่อมต่อแล้ว • Key ${data.current_key}/${data.total_keys}`;
+      if (data.bot_name) botName = data.bot_name;
+    } else {
+      document.getElementById('statusDot').className = 'status-dot err';
+      document.getElementById('statusText').textContent = 'เชื่อมต่อไม่ได้';
+    }
+  } catch {
+    document.getElementById('statusDot').className = 'status-dot err';
+    document.getElementById('statusText').textContent = 'Server ออฟไลน์';
+  }
+}
+
+// ===== ADMIN =====
 async function openAdmin() {
-  document.getElementById('adminPanel').style.display = 'flex';
+  document.getElementById('adminModal').style.display = 'flex';
   const res = await fetch(`${API}/admin/users`, {credentials:'include'});
   const data = await res.json();
-  const tbody = document.getElementById('userTable');
-  tbody.innerHTML = '';
-  (data.users || []).forEach(u => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${u.username}</td>
-      <td>${u.is_admin ? '👑' : '—'}</td>
-      <td style="display:flex;gap:6px">
-        <button class="btn-sm btn-warn" onclick="clearMemory('${u.username}')">ล้าง Memory</button>
-        ${!u.is_admin ? `<button class="btn-sm btn-danger" onclick="deleteUser('${u.username}')">ลบ</button>` : ''}
-      </td>`;
-    tbody.appendChild(tr);
+  const ul = document.getElementById('userList');
+  ul.innerHTML = '';
+  (data.users||[]).forEach(u => {
+    const div = document.createElement('div');
+    div.className = 'user-row';
+    div.innerHTML = `
+      <div>
+        <div class="uname">${u.username} ${u.is_admin?'👑':''}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-sm btn-warn" onclick="clearMem('${u.username}')">ล้าง Memory</button>
+        ${!u.is_admin?`<button class="btn-sm btn-danger" onclick="delUser('${u.username}')">ลบ</button>`:''}
+      </div>`;
+    ul.appendChild(div);
   });
 }
+function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
 
-function closeAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
-
-async function clearMemory(username) {
+async function clearMem(username) {
   if (!confirm(`ล้าง memory ของ ${username}?`)) return;
-  await fetch(`${API}/admin/clear_memory`, {
-    method:'POST', credentials:'include',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({username})
-  });
+  await fetch(`${API}/admin/clear_memory`, {method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
   alert('ล้างแล้ว ✅');
 }
-
-async function deleteUser(username) {
+async function delUser(username) {
   if (!confirm(`ลบบัญชี ${username}?`)) return;
-  await fetch(`${API}/admin/delete_user`, {
-    method:'POST', credentials:'include',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({username})
-  });
+  await fetch(`${API}/admin/delete_user`, {method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
   openAdmin();
 }
 
-// เช็ค session เดิม
+// close sidebar on outside click (mobile)
+document.addEventListener('click', e => {
+  const toggle = document.getElementById('toggle');
+  const sidebar = document.querySelector('.chat-rooms');
+  const label = document.querySelector('label[for="toggle"]');
+  if (toggle.checked && !sidebar.contains(e.target) && e.target !== label) {
+    toggle.checked = false;
+  }
+});
+
+// check existing session
 (async () => {
   try {
     const res = await fetch(`${API}/me`, {credentials:'include'});
     const data = await res.json();
-    if (data.logged_in) { currentUser = data; showApp(); }
+    if (data.logged_in) { me = data; initApp(); }
   } catch {}
 })();
 
@@ -545,52 +665,3 @@ setInterval(checkStatus, 30000);
 </script>
 </body>
 </html>
-<script>
-// Mobile fixes
-function isMobile() { return window.innerWidth <= 768; }
-
-function toggleSidebar() {
-  const sb = document.querySelector('.sidebar');
-  if (sb.style.display === 'flex') {
-    sb.style.display = 'none';
-  } else {
-    sb.style.display = 'flex';
-    sb.style.position = 'fixed';
-    sb.style.left = '0';
-    sb.style.top = '0';
-    sb.style.height = '100dvh';
-    sb.style.zIndex = '40';
-  }
-}
-
-function handleResize() {
-  const menuBtn = document.getElementById('menuBtn');
-  if (menuBtn) menuBtn.style.display = isMobile() ? 'flex' : 'none';
-  if (!isMobile()) {
-    const sb = document.querySelector('.sidebar');
-    if (sb) { sb.style.display = ''; sb.style.position = ''; sb.style.zIndex = ''; }
-  }
-}
-
-// Fix iOS keyboard pushing content
-function fixViewport() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-
-window.addEventListener('resize', () => { handleResize(); fixViewport(); });
-window.addEventListener('orientationchange', () => { setTimeout(fixViewport, 300); });
-
-// Close sidebar when clicking outside on mobile
-document.addEventListener('click', (e) => {
-  if (!isMobile()) return;
-  const sb = document.querySelector('.sidebar');
-  const menuBtn = document.getElementById('menuBtn');
-  if (sb && sb.style.position === 'fixed' && !sb.contains(e.target) && e.target !== menuBtn) {
-    sb.style.display = 'none';
-  }
-});
-
-handleResize();
-fixViewport();
-</script>

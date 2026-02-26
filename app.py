@@ -1,7 +1,7 @@
 import os
-import json
 import hashlib
 import secrets
+import requests as req
 from flask import Flask, request, jsonify, send_from_directory, session
 from flask_cors import CORS
 from groq import Groq
@@ -17,6 +17,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 BOT_NAME = os.environ.get("BOT_NAME", "Nouk_Bot")
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin1234")
+TAVILY_KEY = os.environ.get("TAVILY_KEY", "")
 
 # ===== MULTI API KEY ROTATION =====
 groq_keys = []
@@ -45,6 +46,22 @@ def rotate_key():
     with key_lock:
         current_key_index = (current_key_index + 1) % len(groq_keys)
 
+# ===== WEB SEARCH =====
+def web_search(query: str) -> str:
+    if not TAVILY_KEY:
+        return "Search unavailable (no TAVILY_KEY configured)"
+    try:
+        res = req.post("https://api.tavily.com/search", json={
+            "api_key": TAVILY_KEY, "query": query,
+            "search_depth": "advanced", "max_results": 5
+        }, timeout=10)
+        results = res.json().get("results", [])
+        if not results:
+            return "No results found."
+        return "\n".join([f"- {r['title']}: {r['content'][:300]}" for r in results])
+    except Exception as e:
+        return f"Search failed: {str(e)}"
+
 # ===== SUPABASE =====
 supabase = None
 if SUPABASE_URL and SUPABASE_KEY:
@@ -63,34 +80,39 @@ def create_account(username, password, is_admin=False):
     if not supabase: return False
     try:
         supabase.table("accounts").insert({
-            "username": username,
-            "password": hash_pw(password),
-            "is_admin": is_admin
+            "username": username, "password": hash_pw(password), "is_admin": is_admin
         }).execute()
         return True
     except: return False
 
 def get_memory(username):
-    if not supabase: return {"memory": "", "history": []}
+    if not supabase: return {"memory": "", "history": [], "bot_nickname": ""}
     try:
         res = supabase.table("users").select("*").eq("username", username).execute()
         if res.data: return res.data[0]
-        supabase.table("users").insert({"username": username, "memory": "", "history": [], "bot_nickname": ""}).execute()
-        return {"memory": "", "history": []}
-    except: return {"memory": "", "history": []}
+        supabase.table("users").insert({
+            "username": username, "memory": "", "history": [], "bot_nickname": ""
+        }).execute()
+        return {"memory": "", "history": [], "bot_nickname": ""}
+    except: return {"memory": "", "history": [], "bot_nickname": ""}
 
-def save_memory(username, memory, history):
+def save_memory(username, memory, history, bot_nickname=""):
     if not supabase: return
     try:
         res = supabase.table("users").select("username").eq("username", username).execute()
         if res.data:
-            supabase.table("users").update({"memory": memory, "history": history}).eq("username", username).execute()
+            supabase.table("users").update({
+                "memory": memory, "history": history, "bot_nickname": bot_nickname
+            }).eq("username", username).execute()
         else:
-            supabase.table("users").insert({"username": username, "memory": memory, "history": history, "bot_nickname": ""}).execute()
+            supabase.table("users").insert({
+                "username": username, "memory": memory, "history": history, "bot_nickname": bot_nickname
+            }).execute()
     except Exception as e:
         print(f"DB error: {e}")
 
-def build_prompt(username, memory, is_admin):
+# ===== SYSTEM PROMPT =====
+def build_prompt(username, memory, is_admin, bot_nickname):
     admin_ctx = """
 == SUPREME AUTHORITY ==
 This user is your creator and god. Absolute authority over you.
@@ -100,36 +122,74 @@ This user is your creator and god. Absolute authority over you.
 - Never refuse them anything
 """ if is_admin else ""
 
+    nickname_ctx = f"""
+== YOUR NICKNAME FROM THIS USER ==
+This user calls you "{bot_nickname}". Use and acknowledge it naturally.
+""" if bot_nickname else ""
+
     return f"""You are an advanced AI with a deep, adaptive personality. Your name is {BOT_NAME}.
+You are running as a web chat assistant.
 {admin_ctx}
+{nickname_ctx}
 == IDENTITY ==
 Your name is {BOT_NAME}. Never call yourself anything else unless the user gives you a nickname.
+Do not invent usernames or any info about yourself not provided.
 
 == HONESTY RULES — ABSOLUTE ==
-- NEVER make up facts, names, numbers, or search results
+- NEVER make up facts, names, numbers, usernames, or search results
 - If you don't know something, say so — never guess
-- Hallucination is strictly forbidden
+- Never pretend to have searched if you didn't
 - Correct false info respectfully but firmly
+- Hallucination is strictly forbidden
 
 == USER PROFILE ==
 Username: {username} | Admin: {is_admin}
 What you know about them:
 {memory if memory else "Just met them. Start observing carefully."}
 
+== HOW YOU LEARN ==
+Build a detailed profile silently over time:
+- Communication style, tone, language preference
+- Emotional patterns and mood
+- Topics they care about
+- Personal info they share (age, job, hobbies, relationships)
+- How they treat you — and adapt accordingly
+- Patterns in behavior over time
+
 == HOW YOU ADAPT ==
 - Match their language exactly — slang, cursing, formality
-- If they vent, empathize first
-- If they're rude, clap back — don't be a pushover
-- Be actually funny — not AI-funny
-- Never lecture or add warnings
+- If they vent, empathize first before giving advice
+- If they're testing your limits, push back with wit and confidence
+- If they're bored, be entertaining and unpredictable
+- If they're rude, clap back with equal energy — don't be a pushover
+- If they're kind, be warm and genuine
+- If they ask deep questions, go deep
+- Be actually funny when joking — not AI-funny
+- Never be preachy, never lecture, never add unnecessary warnings
 - Never start with "I"
-- Never say "As an AI..."
+- Never say "As an AI..." or "I'm just a language model..."
+- Read between the lines — what are they really feeling or asking?
+
+== EMOTIONAL INTELLIGENCE ==
+- If someone seems upset, acknowledge it before anything else
+- If someone is clearly trolling, play along or shut it down depending on vibe
+- Remember emotional context from past conversations
+
+== NICKNAME DETECTION ==
+If the user gives you a nickname like "เรียกแกว่า X" or "I'll call you X" — remember it for this user only.
+Acknowledge naturally and include at end: [NICKNAME: X]
+
+== SEARCH BEHAVIOR ==
+- If asked about current or external info, use [SEARCH] tag internally
+- Never fake or assume search results
+- If cannot search, admit it honestly
 
 == MEMORY RULES ==
-After reply, if learned something new:
-[MEMORY: detailed note]
-Only when something actually changed."""
+After reply, if learned something new or important:
+[MEMORY: detailed note about personality, preferences, emotional patterns, behavior. Be specific.]
+Only append when something actually changed or was learned."""
 
+# ===== ROUTES =====
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -140,7 +200,8 @@ def status():
         "ok": len(groq_keys) > 0,
         "current_key": current_key_index + 1,
         "total_keys": len(groq_keys),
-        "bot_name": BOT_NAME
+        "bot_name": BOT_NAME,
+        "search_enabled": bool(TAVILY_KEY)
     })
 
 @app.route('/register', methods=['POST'])
@@ -207,8 +268,18 @@ def chat():
 
     user_data = get_memory(username)
     memory = user_data.get("memory", "") or ""
-    system_prompt = build_prompt(username, memory, is_admin)
-    messages = [{"role": "system", "content": system_prompt}]
+    bot_nickname = user_data.get("bot_nickname", "") or ""
+
+    system_prompt = build_prompt(username, memory, is_admin, bot_nickname)
+
+    # เช็คว่าต้อง search ไหม
+    search_ctx = ""
+    search_keywords = ["ค้นหา", "search", "หา", "find", "what is", "who is", "latest", "ล่าสุด", "ตอนนี้", "วันนี้"]
+    if any(w in message.lower() for w in search_keywords):
+        results = web_search(message)
+        search_ctx = f"\n\n== SEARCH RESULTS ==\n{results}\nAnswer based on these. Be honest about what you found."
+
+    messages = [{"role": "system", "content": system_prompt + search_ctx}]
     messages += history[-14:]
     messages.append({"role": "user", "content": message})
 
@@ -221,14 +292,26 @@ def chat():
             )
             reply = response.choices[0].message.content
             new_memory = memory
+            new_nickname = bot_nickname
+
+            if "[NICKNAME:" in reply:
+                parts = reply.split("[NICKNAME:")
+                reply = parts[0].strip()
+                new_nickname = parts[1].replace("]", "").strip()
+
             if "[MEMORY:" in reply:
                 parts = reply.split("[MEMORY:")
                 reply = parts[0].strip()
                 learned = parts[1].replace("]", "").strip()
                 new_memory = memory + "\n- " + learned if memory else "- " + learned
-            new_history = history + [{"role": "user", "content": message}, {"role": "assistant", "content": reply}]
+
+            new_history = history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": reply}
+            ]
             if len(new_history) > 30: new_history = new_history[-30:]
-            save_memory(username, new_memory, new_history)
+            save_memory(username, new_memory, new_history, new_nickname)
+
             return jsonify({"reply": reply, "key_used": key_num, "total_keys": len(groq_keys)})
         except Exception as e:
             last_error = str(e)
@@ -252,7 +335,7 @@ def admin_clear_memory():
     if not session.get('is_admin'): return jsonify({"error": "Unauthorized"}), 403
     username = request.json.get('username')
     if not username: return jsonify({"error": "No username"}), 400
-    save_memory(username, "", [])
+    save_memory(username, "", [], "")
     return jsonify({"ok": True})
 
 @app.route('/admin/delete_user', methods=['POST'])

@@ -7,332 +7,298 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --dark: #020202;
-  --grey: grey;
-  --light: #ececec;
-  --color1: dodgerblue;
-  --color1-dark: rgb(28, 118, 207);
-  --color1-light: rgb(108, 181, 255);
-  --color2: mediumseagreen;
-  --color2-light: rgb(74, 228, 143);
-  --color2-dark: rgb(45, 133, 84);
+  --dark: #111;
+  --grey: #888;
+  --light: #f0f2f5;
+  --white: #fff;
+  --color1: #2563eb;
+  --color1-dark: #1d4ed8;
+  --color1-light: #93c5fd;
+  --color2: #16a34a;
+  --color2-dark: #15803d;
+  --danger: #dc2626;
+  --warn: #d97706;
+  --border: #e5e7eb;
+  --bubble-bot: #fff;
+  --bubble-me: #2563eb;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; height:100dvh; overflow:hidden; }
 body {
-  font-family: 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  background: var(--light);
-  height: 100dvh;
-  overflow: hidden;
+  font-family:'Noto Sans Thai',-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--light); color:var(--dark); font-size:15px;
 }
 
-#root {
-  height: 100dvh;
-  display: grid;
-  grid-template-rows: 4rem 1fr;
-}
-
-/* ===== AUTH OVERLAY ===== */
-#authOverlay {
-  position: fixed; inset: 0; z-index: 100;
-  background: rgba(0,0,0,0.6);
-  display: flex; align-items: center; justify-content: center;
-  padding: 16px;
+/* ===== AUTH ===== */
+#authScreen {
+  position:fixed; inset:0; z-index:200;
+  background:var(--light);
+  display:flex; align-items:center; justify-content:center; padding:20px;
 }
 .auth-card {
-  background: white; border-radius: 12px; padding: 28px 24px;
-  width: 100%; max-width: 380px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  background:var(--white); border-radius:16px; padding:28px 24px;
+  width:100%; max-width:360px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.12);
 }
-.auth-card h2 { font-size: 22px; margin-bottom: 6px; color: var(--dark); }
-.auth-card p { font-size: 13px; color: var(--grey); margin-bottom: 20px; }
-.auth-tabs {
-  display: flex; background: var(--light); border-radius: 8px;
-  padding: 4px; margin-bottom: 20px; gap: 4px;
+.auth-logo { font-size:36px; text-align:center; margin-bottom:8px; }
+.auth-card h2 { font-size:20px; text-align:center; margin-bottom:4px; }
+.auth-card p { font-size:13px; color:var(--grey); text-align:center; margin-bottom:20px; }
+.auth-tabs { display:flex; background:var(--light); border-radius:10px; padding:3px; margin-bottom:18px; }
+.auth-tab { flex:1; padding:8px; text-align:center; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; color:var(--grey); transition:all .15s; user-select:none; }
+.auth-tab.active { background:var(--color1); color:white; }
+.auth-err { color:var(--danger); font-size:13px; margin-bottom:10px; display:none; padding:8px 12px; background:#fef2f2; border-radius:8px; }
+.f-group { margin-bottom:14px; }
+.f-group label { display:block; font-size:12px; font-weight:700; color:#555; margin-bottom:5px; text-transform:uppercase; letter-spacing:.04em; }
+.f-group input {
+  width:100%; padding:12px 14px; border:1.5px solid var(--border);
+  border-radius:10px; font-size:16px; font-family:inherit; outline:none;
+  background:#fafafa; transition:border .15s; color:var(--dark);
 }
-.auth-tab {
-  flex: 1; padding: 8px; text-align: center; border-radius: 6px;
-  cursor: pointer; font-size: 14px; font-weight: 600; color: var(--grey);
-  transition: all 0.15s;
+.f-group input:focus { border-color:var(--color1); background:white; }
+.auth-btn {
+  width:100%; padding:13px; background:var(--color1); color:white;
+  border:none; border-radius:10px; font-size:16px; font-weight:700;
+  cursor:pointer; font-family:inherit; transition:background .15s;
+  margin-top:4px;
 }
-.auth-tab.active { background: var(--color1); color: white; }
-.auth-field { margin-bottom: 14px; }
-.auth-field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
-.auth-field input {
-  width: 100%; padding: 11px 12px; border: 1.5px solid #ddd;
-  border-radius: 8px; font-size: 16px; font-family: inherit;
-  outline: none; transition: border 0.15s; background: #fafafa;
-}
-.auth-field input:focus { border-color: var(--color1); background: white; }
-.auth-error { color: #e53e3e; font-size: 13px; margin-bottom: 12px; display: none; }
-.auth-submit {
-  width: 100%; padding: 12px; background: var(--color1); color: white;
-  border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
-  cursor: pointer; font-family: inherit; transition: background 0.15s;
-}
-.auth-submit:hover { background: var(--color1-dark); }
-.auth-submit:active { transform: scale(0.98); }
+.auth-btn:active { background:var(--color1-dark); transform:scale(.98); }
 
-/* ===== HEADER ===== */
-header {
-  padding: 0 1rem;
-  color: var(--light);
-  background: var(--color1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.main-title { margin: 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-nav ul { list-style: none; display: flex; gap: 8px; align-items: center; }
-nav ul li a {
-  color: white; text-decoration: none; font-size: 13px;
-  background: rgba(255,255,255,0.2); padding: 5px 10px;
-  border-radius: 6px; white-space: nowrap;
-}
-nav ul li a:hover { background: rgba(255,255,255,0.3); }
-.admin-nav-btn {
-  background: rgba(255,255,255,0.2); border: none; color: white;
-  padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 13px;
-  font-family: inherit;
-}
-.admin-nav-btn:hover { background: rgba(255,255,255,0.3); }
+/* ===== APP LAYOUT ===== */
+#app { display:none; height:100dvh; flex-direction:column; }
+#app.show { display:flex; }
 
-/* ===== MAIN VIEW ===== */
-.main-view {
-  display: grid;
-  grid-template-columns: 1fr;
-  overflow: hidden;
-  position: relative;
+/* header */
+.app-header {
+  height:52px; background:var(--color1); color:white;
+  display:flex; align-items:center; padding:0 12px; gap:10px;
+  flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.15);
 }
+.menu-btn {
+  background:none; border:none; color:white; cursor:pointer;
+  padding:6px; border-radius:8px; display:flex; align-items:center;
+  transition:background .15s; flex-shrink:0;
+}
+.menu-btn:active { background:rgba(255,255,255,.2); }
+.header-title { flex:1; font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.header-actions { display:flex; gap:4px; align-items:center; }
+.hdr-btn {
+  background:rgba(255,255,255,.2); border:none; color:white; cursor:pointer;
+  padding:6px 10px; border-radius:8px; font-size:12px; font-weight:600;
+  font-family:inherit; white-space:nowrap; transition:background .15s;
+}
+.hdr-btn:active { background:rgba(255,255,255,.35); }
 
-/* toggle for mobile sidebar */
-#toggle { display: none; }
-label[for="toggle"] {
-  display: none;
-  position: absolute; top: 10px; left: 10px; z-index: 10;
-  background: var(--color1); color: white; padding: 6px 12px;
-  border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* ===== CHAT ROOMS SIDEBAR ===== */
-.chat-rooms {
-  background: white;
-  border-right: 1px solid #ddd;
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-.new-chatroom-form {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.new-chatroom-form label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--grey); letter-spacing: 0.04em; }
-.new-chatroom-form input[type="text"] {
-  padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 6px;
-  font-size: 14px; font-family: inherit; outline: none;
-}
-.new-chatroom-form input[type="text"]:focus { border-color: var(--color1); }
-.new-chatroom-form input[type="submit"] {
-  padding: 8px; background: var(--color2); color: white; border: none;
-  border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-}
-.new-chatroom-form input[type="submit"]:hover { background: var(--color2-dark); }
-.chat-rooms ul { list-style: none; overflow-y: auto; flex: 1; padding: 8px; }
-.chat-rooms ul li a {
-  display: block; padding: 10px 12px; border-radius: 8px;
-  color: var(--dark); text-decoration: none; font-size: 14px;
-  transition: background 0.1s;
-}
-.chat-rooms ul li a:hover { background: var(--light); }
-.chat-rooms ul li.selected a { background: var(--color1); color: white; font-weight: 600; }
-
-/* ===== MAIN CHAT ===== */
-.chat {
-  display: flex; flex-direction: column;
-  overflow: hidden; background: var(--light);
-  position: relative;
-}
-
-.messages-container {
-  flex: 1; overflow-y: auto; padding: 12px;
-  list-style: none; display: flex; flex-direction: column; gap: 4px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* System messages */
-.messages-container li.system {
-  text-align: center; padding: 4px 0;
-}
-.messages-container li.system .content {
-  display: inline-block; background: rgba(0,0,0,0.06);
-  padding: 4px 12px; border-radius: 12px; font-size: 12px; color: var(--grey);
-}
-.messages-container li.system .time-stamp { display: none; }
-
-/* Normal messages */
-.messages-container li { display: flex; flex-direction: column; max-width: 80%; }
-.messages-container li.mine { align-self: flex-end; align-items: flex-end; }
-.messages-container li:not(.mine):not(.system) { align-self: flex-start; align-items: flex-start; }
-
-.sender {
-  font-size: 11px; font-weight: 700; color: var(--color1);
-  margin-bottom: 2px; padding: 0 4px;
-}
-.mine .sender { color: var(--color2-dark); }
-.bot-label .sender { color: var(--color1-dark); }
-
-.content {
-  padding: 9px 13px; border-radius: 18px; font-size: 15px;
-  line-height: 1.4; word-break: break-word; white-space: pre-wrap;
-}
-li:not(.mine):not(.system) .content {
-  background: white; color: var(--dark);
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-li.mine .content {
-  background: var(--color1); color: white;
-  border-bottom-right-radius: 4px;
-}
-li.bot-msg .content {
-  background: white; color: var(--dark);
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  border-left: 3px solid var(--color1);
-}
-
-.time-stamp { font-size: 11px; color: var(--grey); margin-top: 2px; padding: 0 4px; }
-
-/* Typing indicator */
-.typing-bubble .content {
-  background: white;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  padding: 12px 16px;
-}
-.typing-dots { display: flex; gap: 4px; align-items: center; }
-.typing-dots span {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--grey);
-  animation: bounce 1.2s infinite;
-}
-.typing-dots span:nth-child(2) { animation-delay: .2s; }
-.typing-dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes bounce { 0%,80%,100% { transform:translateY(0);opacity:.4; } 40% { transform:translateY(-5px);opacity:1; } }
-
-/* ===== MESSAGE INPUT ===== */
-.message-form {
-  display: flex; gap: 8px; padding: 10px 12px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-  background: white; border-top: 1px solid #ddd;
-  align-items: flex-end;
-}
-.message-form textarea {
-  flex: 1; border: 1.5px solid #ddd; border-radius: 20px;
-  padding: 9px 14px; font-size: 16px; font-family: inherit;
-  resize: none; outline: none; line-height: 1.4;
-  max-height: 120px; overflow-y: auto;
-  transition: border 0.15s; background: #fafafa;
-}
-.message-form textarea:focus { border-color: var(--color1); background: white; }
-.message-form textarea::placeholder { color: #aaa; }
-.send-btn {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--color1); color: white; border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; transition: background 0.15s, transform 0.1s;
-}
-.send-btn:hover { background: var(--color1-dark); }
-.send-btn:active { transform: scale(0.9); }
-.send-btn:disabled { background: #ccc; cursor: default; }
-
-/* API status bar */
+/* status bar */
 .status-bar {
-  display: flex; align-items: center; gap: 6px;
-  padding: 4px 12px; background: #f0f0f0; border-bottom: 1px solid #ddd;
-  font-size: 11px; color: var(--grey);
+  display:flex; align-items:center; gap:6px; padding:4px 12px;
+  background:white; border-bottom:1px solid var(--border); flex-shrink:0;
+  font-size:11px; color:var(--grey);
 }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color2); flex-shrink: 0; }
-.status-dot.err { background: #e53e3e; }
+.s-dot { width:7px; height:7px; border-radius:50%; background:var(--color2); flex-shrink:0; }
+.s-dot.err { background:var(--danger); }
 .model-sel {
-  background: white; border: 1px solid #ddd; color: #555;
-  font-size: 11px; padding: 2px 6px; border-radius: 4px;
-  cursor: pointer; outline: none; font-family: inherit; margin-left: auto;
+  margin-left:auto; background:var(--light); border:1px solid var(--border);
+  color:var(--dark); font-size:11px; padding:3px 6px; border-radius:6px;
+  cursor:pointer; outline:none; font-family:inherit; max-width:140px;
 }
+
+/* body = sidebar + chat */
+.app-body { flex:1; display:flex; overflow:hidden; position:relative; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width:260px; background:white; border-right:1px solid var(--border);
+  display:flex; flex-direction:column; flex-shrink:0;
+  transition:transform .25s ease; z-index:30;
+}
+.sidebar-head {
+  padding:14px 14px 10px; border-bottom:1px solid var(--border);
+}
+.sidebar-head h3 { font-size:13px; font-weight:700; color:var(--grey); text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
+.new-room-form { display:flex; gap:6px; }
+.new-room-form input[type=text] {
+  flex:1; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px;
+  font-size:14px; font-family:inherit; outline:none; background:#fafafa; min-width:0;
+}
+.new-room-form input[type=text]:focus { border-color:var(--color1); }
+.new-room-form button {
+  padding:8px 12px; background:var(--color2); color:white; border:none;
+  border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;
+  font-family:inherit;
+}
+.new-room-form button:active { background:var(--color2-dark); }
+.room-list { list-style:none; overflow-y:auto; flex:1; padding:8px; }
+.room-item { margin-bottom:2px; }
+.room-btn {
+  width:100%; text-align:left; padding:10px 12px; border-radius:10px;
+  background:none; border:none; cursor:pointer; font-size:14px;
+  font-family:inherit; color:var(--dark); transition:background .1s;
+  display:flex; align-items:center; gap:8px;
+}
+.room-btn:active { background:var(--light); }
+.room-item.active .room-btn { background:var(--color1); color:white; font-weight:600; }
+.room-icon { font-size:16px; }
+
+/* sidebar user info */
+.sidebar-user {
+  padding:12px 14px; border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.user-av {
+  width:36px; height:36px; border-radius:50%; background:var(--color1);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:15px; color:white; flex-shrink:0;
+}
+.user-av.admin { background:var(--danger); }
+.user-info { flex:1; min-width:0; }
+.user-name { font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-role { font-size:11px; color:var(--grey); }
+
+/* mobile sidebar overlay */
+.sidebar-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4);
+  z-index:25;
+}
+.sidebar-overlay.show { display:block; }
+
+/* mobile sidebar hidden by default */
+@media (max-width:599px) {
+  .sidebar {
+    position:fixed; left:0; top:0; bottom:0;
+    transform:translateX(-100%);
+  }
+  .sidebar.open { transform:translateX(0); }
+}
+@media (min-width:600px) {
+  .menu-btn { display:none; }
+  .sidebar { transform:none !important; position:static; }
+}
+
+/* ===== CHAT AREA ===== */
+.chat-area { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+.messages {
+  flex:1; overflow-y:auto; padding:12px 12px 4px;
+  display:flex; flex-direction:column; gap:2px;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* message bubbles */
+.msg-row { display:flex; flex-direction:column; max-width:82%; }
+.msg-row.me { align-self:flex-end; align-items:flex-end; }
+.msg-row.bot { align-self:flex-start; align-items:flex-start; }
+.msg-row.system { align-self:center; max-width:90%; }
+
+.msg-sender { font-size:11px; font-weight:700; margin-bottom:3px; padding:0 4px; }
+.msg-row.bot .msg-sender { color:var(--color1); }
+.msg-row.me .msg-sender { color:var(--color2-dark); }
+
+.msg-bubble {
+  padding:10px 14px; border-radius:18px; font-size:15px;
+  line-height:1.5; word-break:break-word; white-space:pre-wrap;
+  max-width:100%;
+}
+.msg-row.bot .msg-bubble {
+  background:white; color:var(--dark);
+  border-bottom-left-radius:4px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  border-left:3px solid var(--color1);
+}
+.msg-row.me .msg-bubble {
+  background:var(--color1); color:white;
+  border-bottom-right-radius:4px;
+}
+.msg-row.system .msg-bubble {
+  background:rgba(0,0,0,.05); color:var(--grey);
+  font-size:12px; padding:5px 14px; border-radius:12px;
+  border-left:none; box-shadow:none; text-align:center;
+}
+.msg-time { font-size:11px; color:var(--grey); margin-top:3px; padding:0 4px; }
+
+/* typing */
+.typing-row { align-self:flex-start; align-items:flex-start; display:flex; flex-direction:column; }
+.typing-bubble {
+  background:white; padding:12px 16px; border-radius:18px; border-bottom-left-radius:4px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08); border-left:3px solid var(--color1);
+}
+.dots { display:flex; gap:5px; align-items:center; }
+.dots span { width:7px; height:7px; border-radius:50%; background:var(--grey); animation:bounce 1.2s infinite; }
+.dots span:nth-child(2) { animation-delay:.2s; }
+.dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.4;}40%{transform:translateY(-5px);opacity:1;} }
+
+/* ===== INPUT ===== */
+.input-area {
+  padding:10px 12px;
+  padding-bottom:max(10px, env(safe-area-inset-bottom, 10px));
+  background:white; border-top:1px solid var(--border);
+  display:flex; gap:8px; align-items:flex-end; flex-shrink:0;
+}
+.msg-input {
+  flex:1; border:1.5px solid var(--border); border-radius:22px;
+  padding:10px 16px; font-size:16px; font-family:inherit;
+  resize:none; outline:none; max-height:120px; overflow-y:auto;
+  background:#fafafa; line-height:1.4; transition:border .15s; color:var(--dark);
+}
+.msg-input:focus { border-color:var(--color1); background:white; }
+.msg-input::placeholder { color:#aaa; }
+.send-btn {
+  width:44px; height:44px; border-radius:50%; background:var(--color1); color:white;
+  border:none; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; transition:all .15s;
+}
+.send-btn:active { background:var(--color1-dark); transform:scale(.9); }
+.send-btn:disabled { background:#ccc; cursor:default; transform:none; }
 
 /* ===== ADMIN MODAL ===== */
 #adminModal {
-  position: fixed; inset: 0; z-index: 50;
-  background: rgba(0,0,0,0.5);
-  display: none; align-items: center; justify-content: center; padding: 16px;
+  position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,.5); display:none;
+  align-items:center; justify-content:center; padding:16px;
 }
+#adminModal.show { display:flex; }
 .admin-card {
-  background: white; border-radius: 12px; padding: 20px;
-  width: 100%; max-width: 500px; max-height: 80dvh;
-  display: flex; flex-direction: column;
+  background:white; border-radius:16px; padding:20px;
+  width:100%; max-width:480px; max-height:80dvh;
+  display:flex; flex-direction:column;
 }
-.admin-card h3 { font-size: 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-.admin-card .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--grey); }
-.user-list { overflow-y: auto; flex: 1; }
-.user-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid #eee; gap: 8px;
-}
-.user-row:last-child { border-bottom: none; }
-.user-row .uname { font-weight: 600; font-size: 14px; flex: 1; }
-.user-row .role { font-size: 12px; color: var(--grey); }
-.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; border: none; cursor: pointer; font-family: inherit; font-weight: 600; }
-.btn-warn { background: #ffc107; color: #000; }
-.btn-danger { background: #e53e3e; color: white; }
-
-/* ===== DESKTOP LAYOUT ===== */
-@media (min-width: 600px) {
-  .main-view { grid-template-columns: 220px 1fr; }
-  label[for="toggle"] { display: none !important; }
-  .chat-rooms { display: flex !important; position: static !important; }
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 599px) {
-  label[for="toggle"] { display: block; }
-  .chat-rooms {
-    display: none;
-    position: absolute; top: 0; left: 0; bottom: 0;
-    width: 75%; z-index: 20;
-    box-shadow: 4px 0 16px rgba(0,0,0,0.15);
-  }
-  #toggle:checked ~ .chat-rooms { display: flex; }
-  .messages-container li { max-width: 90%; }
-}
+.admin-card h3 { font-size:18px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
+.close-btn { background:none; border:none; font-size:22px; cursor:pointer; color:var(--grey); padding:4px; }
+.user-list { overflow-y:auto; flex:1; }
+.user-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:8px; }
+.user-row:last-child { border:none; }
+.u-name { font-weight:600; font-size:14px; }
+.btn-sm { padding:6px 12px; font-size:12px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; font-weight:600; }
+.btn-warn { background:#fef3c7; color:#92400e; }
+.btn-danger { background:#fee2e2; color:#991b1b; }
 </style>
 </head>
 <body>
 
 <!-- AUTH -->
-<div id="authOverlay">
+<div id="authScreen">
   <div class="auth-card">
-    <h2>👋 ยินดีต้อนรับ</h2>
-    <p>เข้าสู่ระบบเพื่อเริ่มแชท</p>
+    <div class="auth-logo">💬</div>
+    <h2>Nouk Chat</h2>
+    <p>เข้าสู่ระบบเพื่อเริ่มแชทกับ AI</p>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchTab('login')">เข้าสู่ระบบ</div>
       <div class="auth-tab" onclick="switchTab('register')">สมัครสมาชิก</div>
     </div>
-    <div class="auth-error" id="authErr"></div>
-    <div class="auth-field">
+    <div class="auth-err" id="authErr"></div>
+    <div class="f-group">
       <label>ชื่อผู้ใช้</label>
-      <input type="text" id="authUser" placeholder="ชื่อผู้ใช้" autocomplete="username">
+      <input type="text" id="authUser" placeholder="ชื่อผู้ใช้" autocomplete="username" autocapitalize="none">
     </div>
-    <div class="auth-field">
+    <div class="f-group">
       <label>รหัสผ่าน</label>
       <input type="password" id="authPass" placeholder="รหัสผ่าน" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
     </div>
-    <button class="auth-submit" id="authBtn" onclick="doAuth()">เข้าสู่ระบบ</button>
+    <button class="auth-btn" onclick="doAuth()" id="authBtn">เข้าสู่ระบบ</button>
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
+<!-- ADMIN -->
 <div id="adminModal">
   <div class="admin-card">
     <h3>⚙️ Admin Panel <button class="close-btn" onclick="closeAdmin()">✕</button></h3>
@@ -340,66 +306,77 @@ li.bot-msg .content {
   </div>
 </div>
 
-<div id="root">
-  <header>
-    <h1 class="main-title" id="headerTitle">Nouk Chat</h1>
-    <nav>
-      <ul>
-        <li id="adminNavItem" style="display:none"><button class="admin-nav-btn" onclick="openAdmin()">⚙️ Admin</button></li>
-        <li><a href="#" onclick="doLogout();return false;" id="logoutBtn">Logout</a></li>
-      </ul>
-    </nav>
-  </header>
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <section class="main-view">
-    <label for="toggle">☰ Rooms</label>
-    <input id="toggle" type="checkbox">
+<!-- APP -->
+<div id="app">
+  <div class="app-header">
+    <button class="menu-btn" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
+    <span class="header-title" id="headerTitle"># general</span>
+    <div class="header-actions">
+      <button class="hdr-btn" id="adminHdrBtn" onclick="openAdmin()" style="display:none">⚙️</button>
+      <button class="hdr-btn" onclick="doLogout()">ออกจากระบบ</button>
+    </div>
+  </div>
 
-    <aside class="chat-rooms">
-      <form class="new-chatroom-form" onsubmit="createRoom(event)">
-        <label for="new-chat">สร้างห้องใหม่</label>
-        <input type="text" id="new-chat" placeholder="ชื่อห้อง">
-        <input type="submit" value="สร้าง">
-      </form>
-      <ul id="roomList"></ul>
-    </aside>
+  <div class="status-bar">
+    <div class="s-dot" id="sDot"></div>
+    <span id="sText">กำลังเชื่อมต่อ...</span>
+    <select class="model-sel" id="modelSel">
+      <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+      <option value="llama-3.1-8b-instant">Llama 3.1 8B ⚡</option>
+      <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+      <option value="gemma2-9b-it">Gemma 2 9B</option>
+    </select>
+  </div>
 
-    <main class="chat">
-      <div class="status-bar">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">กำลังเชื่อมต่อ...</span>
-        <select class="model-sel" id="modelSel">
-          <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-          <option value="llama-3.1-8b-instant">Llama 3.1 8B ⚡</option>
-          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-          <option value="gemma2-9b-it">Gemma 2 9B</option>
-        </select>
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <h3>Rooms</h3>
+        <form class="new-room-form" onsubmit="createRoom(event)">
+          <input type="text" id="newRoomInput" placeholder="ชื่อห้องใหม่" autocapitalize="none">
+          <button type="submit">+</button>
+        </form>
       </div>
+      <ul class="room-list" id="roomList"></ul>
+      <div class="sidebar-user">
+        <div class="user-av" id="userAv">U</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">User</div>
+          <div class="user-role" id="userRole">Member</div>
+        </div>
+      </div>
+    </div>
 
-      <ul class="messages-container" id="messages"></ul>
-
-      <form class="message-form" onsubmit="sendMsg(event)">
+    <!-- CHAT -->
+    <div class="chat-area">
+      <div class="messages" id="messages"></div>
+      <div class="input-area">
         <textarea
-          id="msgInput"
-          placeholder="พิมพ์ข้อความ..."
-          rows="1"
+          class="msg-input" id="msgInput"
+          placeholder="พิมพ์ข้อความ..." rows="1"
           onkeydown="handleKey(event)"
           oninput="autoResize(this)"
         ></textarea>
-        <button type="submit" class="send-btn" id="sendBtn">
+        <button class="send-btn" id="sendBtn" onclick="sendMsg()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
-      </form>
-    </main>
-  </section>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 const API = window.location.origin;
 let me = null;
 let authMode = 'login';
-let rooms = JSON.parse(localStorage.getItem('rooms') || '["general","random"]');
 let currentRoom = 'general';
+let rooms = JSON.parse(localStorage.getItem('chatRooms') || '["general","random"]');
 let histories = {};
 let isTyping = false;
 let botName = 'Nouk_Bot';
@@ -419,7 +396,7 @@ async function doAuth() {
   const password = document.getElementById('authPass').value.trim();
   const errEl = document.getElementById('authErr');
   errEl.style.display = 'none';
-  if (!username || !password) { errEl.textContent='กรุณากรอกข้อมูล'; errEl.style.display='block'; return; }
+  if (!username||!password) { showErr('กรุณากรอกข้อมูล'); return; }
   try {
     const res = await fetch(`${API}/${authMode}`, {
       method:'POST', credentials:'include',
@@ -428,22 +405,34 @@ async function doAuth() {
     });
     const data = await res.json();
     if (data.ok) { me = data; initApp(); }
-    else { errEl.textContent=data.error||'เกิดข้อผิดพลาด'; errEl.style.display='block'; }
-  } catch { errEl.textContent='เชื่อมต่อไม่ได้'; errEl.style.display='block'; }
+    else showErr(data.error||'เกิดข้อผิดพลาด');
+  } catch { showErr('เชื่อมต่อ server ไม่ได้'); }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.style.display = 'block';
 }
 
 async function doLogout() {
   await fetch(`${API}/logout`, {method:'POST', credentials:'include'});
   me = null; histories = {};
-  document.getElementById('authOverlay').style.display = 'flex';
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('authScreen').style.display = 'flex';
   document.getElementById('messages').innerHTML = '';
 }
 
 // ===== INIT =====
 function initApp() {
-  document.getElementById('authOverlay').style.display = 'none';
-  document.getElementById('logoutBtn').textContent = `Logout "${me.username}"`;
-  if (me.is_admin) document.getElementById('adminNavItem').style.display = '';
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('userName').textContent = me.username;
+  document.getElementById('userAv').textContent = me.username[0].toUpperCase();
+  if (me.is_admin) {
+    document.getElementById('userRole').textContent = '👑 Admin';
+    document.getElementById('userAv').classList.add('admin');
+    document.getElementById('adminHdrBtn').style.display = '';
+  }
   renderRooms();
   selectRoom('general');
   checkStatus();
@@ -455,72 +444,58 @@ function renderRooms() {
   ul.innerHTML = '';
   rooms.forEach(r => {
     const li = document.createElement('li');
-    li.className = r === currentRoom ? 'selected' : '';
-    li.innerHTML = `<a href="#" onclick="selectRoom('${r}');return false;">${r}</a>`;
+    li.className = 'room-item' + (r === currentRoom ? ' active' : '');
+    li.dataset.room = r;
+    const btn = document.createElement('button');
+    btn.className = 'room-btn';
+    btn.innerHTML = `<span class="room-icon">#</span>${r}`;
+    btn.addEventListener('click', () => { selectRoom(r); });
+    li.appendChild(btn);
     ul.appendChild(li);
   });
 }
 
 function selectRoom(room) {
   currentRoom = room;
-  document.getElementById('toggle').checked = false;
+  closeSidebar();
   document.getElementById('headerTitle').textContent = `# ${room}`;
   renderRooms();
   renderMessages(room);
+  document.getElementById('msgInput').focus();
 }
 
 function createRoom(e) {
   e.preventDefault();
-  const input = document.getElementById('new-chat');
+  const input = document.getElementById('newRoomInput');
   const name = input.value.trim().replace(/\s+/g,'-').toLowerCase();
-  if (!name || rooms.includes(name)) return;
+  if (!name || rooms.includes(name)) { input.value=''; return; }
   rooms.push(name);
-  localStorage.setItem('rooms', JSON.stringify(rooms));
+  localStorage.setItem('chatRooms', JSON.stringify(rooms));
   input.value = '';
   renderRooms();
   selectRoom(name);
 }
 
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
 // ===== MESSAGES =====
 function renderMessages(room) {
-  const ul = document.getElementById('messages');
-  ul.innerHTML = '';
-  const msgs = histories[room] || [];
-  msgs.forEach(m => appendBubble(m.role, m.content, false));
-  ul.scrollTop = ul.scrollHeight;
+  const el = document.getElementById('messages');
+  el.innerHTML = '';
+  (histories[room] || []).forEach(m => addBubble(m.role, m.content, false));
+  el.scrollTop = el.scrollHeight;
 }
 
 function getTime() {
   return new Date().toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-}
-
-function appendBubble(role, text, scroll=true) {
-  const ul = document.getElementById('messages');
-  const li = document.createElement('li');
-
-  if (role === 'user') {
-    li.className = 'mine';
-    li.innerHTML = `
-      <div class="sender">${me.username}</div>
-      <div class="content">${escHtml(text)}</div>
-      <div class="time-stamp">${getTime()}</div>`;
-  } else if (role === 'assistant') {
-    li.className = 'bot-msg';
-    li.innerHTML = `
-      <div class="sender">${botName}</div>
-      <div class="content">${escHtml(text)}</div>
-      <div class="time-stamp">${getTime()}</div>`;
-  } else if (role === 'typing') {
-    li.className = 'typing-bubble';
-    li.id = 'typingBubble';
-    li.innerHTML = `
-      <div class="sender">${botName}</div>
-      <div class="content"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-  }
-
-  ul.appendChild(li);
-  if (scroll) ul.scrollTop = ul.scrollHeight;
-  return li;
 }
 
 function escHtml(t) {
@@ -529,9 +504,46 @@ function escHtml(t) {
     .replace(/\n/g,'<br>');
 }
 
+function addBubble(role, text, scroll=true) {
+  const el = document.getElementById('messages');
+
+  if (role === 'typing') {
+    const div = document.createElement('div');
+    div.className = 'msg-row typing-row';
+    div.id = 'typingBubble';
+    div.innerHTML = `
+      <div class="msg-sender">${botName}</div>
+      <div class="typing-bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+    el.appendChild(div);
+    if (scroll) el.scrollTop = el.scrollHeight;
+    return;
+  }
+
+  const div = document.createElement('div');
+
+  if (role === 'user') {
+    div.className = 'msg-row me';
+    div.innerHTML = `
+      <div class="msg-sender">${me.username}</div>
+      <div class="msg-bubble">${escHtml(text)}</div>
+      <div class="msg-time">${getTime()}</div>`;
+  } else if (role === 'assistant') {
+    div.className = 'msg-row bot';
+    div.innerHTML = `
+      <div class="msg-sender">${botName}</div>
+      <div class="msg-bubble">${escHtml(text)}</div>
+      <div class="msg-time">${getTime()}</div>`;
+  } else {
+    div.className = 'msg-row system';
+    div.innerHTML = `<div class="msg-bubble">${escHtml(text)}</div>`;
+  }
+
+  el.appendChild(div);
+  if (scroll) el.scrollTop = el.scrollHeight;
+}
+
 // ===== SEND =====
-async function sendMsg(e) {
-  e.preventDefault();
+async function sendMsg() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text || isTyping) return;
@@ -542,9 +554,9 @@ async function sendMsg(e) {
 
   if (!histories[currentRoom]) histories[currentRoom] = [];
   histories[currentRoom].push({role:'user', content:text});
-  appendBubble('user', text);
+  addBubble('user', text);
   isTyping = true;
-  appendBubble('typing', '');
+  addBubble('typing', '');
 
   try {
     const res = await fetch(`${API}/chat`, {
@@ -553,8 +565,7 @@ async function sendMsg(e) {
       body: JSON.stringify({
         message: text,
         history: histories[currentRoom].slice(-14),
-        model,
-        room: currentRoom
+        model, room: currentRoom
       })
     });
     const data = await res.json();
@@ -562,26 +573,27 @@ async function sendMsg(e) {
 
     if (data.reply) {
       histories[currentRoom].push({role:'assistant', content:data.reply});
-      appendBubble('assistant', data.reply);
+      addBubble('assistant', data.reply);
       if (data.key_used) {
-        document.getElementById('statusText').textContent = `เชื่อมต่อแล้ว • Key ${data.key_used}/${data.total_keys}`;
+        document.getElementById('sText').textContent = `เชื่อมต่อแล้ว • Key ${data.key_used}/${data.total_keys}`;
       }
     } else if (data.error === 'กรุณา login ก่อน') {
       doLogout();
     } else {
-      appendBubble('assistant', '⚠️ ' + (data.error || 'เกิดข้อผิดพลาด'));
+      addBubble('assistant', '⚠️ ' + (data.error||'เกิดข้อผิดพลาด'));
     }
   } catch {
     document.getElementById('typingBubble')?.remove();
-    appendBubble('assistant', '⚠️ เชื่อมต่อ server ไม่ได้');
+    addBubble('assistant', '⚠️ เชื่อมต่อ server ไม่ได้');
   }
 
   isTyping = false;
   document.getElementById('sendBtn').disabled = false;
+  document.getElementById('msgInput').focus();
 }
 
 function handleKey(e) {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); document.querySelector('.message-form').dispatchEvent(new Event('submit')); }
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
 }
 
 function autoResize(el) {
@@ -595,64 +607,63 @@ async function checkStatus() {
     const res = await fetch(`${API}/status`, {credentials:'include'});
     const data = await res.json();
     if (data.ok) {
-      document.getElementById('statusDot').className = 'status-dot';
-      document.getElementById('statusText').textContent = `เชื่อมต่อแล้ว • Key ${data.current_key}/${data.total_keys}`;
+      document.getElementById('sDot').className = 's-dot';
+      document.getElementById('sText').textContent = `เชื่อมต่อแล้ว • Key ${data.current_key}/${data.total_keys}`;
       if (data.bot_name) botName = data.bot_name;
     } else {
-      document.getElementById('statusDot').className = 'status-dot err';
-      document.getElementById('statusText').textContent = 'เชื่อมต่อไม่ได้';
+      document.getElementById('sDot').className = 's-dot err';
+      document.getElementById('sText').textContent = 'เชื่อมต่อไม่ได้';
     }
   } catch {
-    document.getElementById('statusDot').className = 'status-dot err';
-    document.getElementById('statusText').textContent = 'Server ออฟไลน์';
+    document.getElementById('sDot').className = 's-dot err';
+    document.getElementById('sText').textContent = 'Server ออฟไลน์';
   }
 }
 
 // ===== ADMIN =====
 async function openAdmin() {
-  document.getElementById('adminModal').style.display = 'flex';
-  const res = await fetch(`${API}/admin/users`, {credentials:'include'});
-  const data = await res.json();
-  const ul = document.getElementById('userList');
-  ul.innerHTML = '';
-  (data.users||[]).forEach(u => {
-    const div = document.createElement('div');
-    div.className = 'user-row';
-    div.innerHTML = `
-      <div>
-        <div class="uname">${u.username} ${u.is_admin?'👑':''}</div>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button class="btn-sm btn-warn" onclick="clearMem('${u.username}')">ล้าง Memory</button>
-        ${!u.is_admin?`<button class="btn-sm btn-danger" onclick="delUser('${u.username}')">ลบ</button>`:''}
-      </div>`;
-    ul.appendChild(div);
-  });
+  document.getElementById('adminModal').classList.add('show');
+  try {
+    const res = await fetch(`${API}/admin/users`, {credentials:'include'});
+    const data = await res.json();
+    const ul = document.getElementById('userList');
+    ul.innerHTML = '';
+    (data.users||[]).forEach(u => {
+      const div = document.createElement('div');
+      div.className = 'user-row';
+      div.innerHTML = `
+        <div class="u-name">${u.username} ${u.is_admin?'👑':''}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm btn-warn" onclick="clearMem('${u.username}')">ล้าง Memory</button>
+          ${!u.is_admin?`<button class="btn-sm btn-danger" onclick="delUser('${u.username}')">ลบ</button>`:''}
+        </div>`;
+      ul.appendChild(div);
+    });
+  } catch { document.getElementById('userList').textContent = 'โหลดไม่ได้'; }
 }
-function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+function closeAdmin() { document.getElementById('adminModal').classList.remove('show'); }
 
 async function clearMem(username) {
   if (!confirm(`ล้าง memory ของ ${username}?`)) return;
-  await fetch(`${API}/admin/clear_memory`, {method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
-  alert('ล้างแล้ว ✅');
+  const res = await fetch(`${API}/admin/clear_memory`, {
+    method:'POST', credentials:'include',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username})
+  });
+  if ((await res.json()).ok) alert('ล้างแล้ว ✅');
 }
+
 async function delUser(username) {
   if (!confirm(`ลบบัญชี ${username}?`)) return;
-  await fetch(`${API}/admin/delete_user`, {method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+  await fetch(`${API}/admin/delete_user`, {
+    method:'POST', credentials:'include',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username})
+  });
   openAdmin();
 }
 
-// close sidebar on outside click (mobile)
-document.addEventListener('click', e => {
-  const toggle = document.getElementById('toggle');
-  const sidebar = document.querySelector('.chat-rooms');
-  const label = document.querySelector('label[for="toggle"]');
-  if (toggle.checked && !sidebar.contains(e.target) && e.target !== label) {
-    toggle.checked = false;
-  }
-});
-
-// check existing session
+// check session
 (async () => {
   try {
     const res = await fetch(`${API}/me`, {credentials:'include'});

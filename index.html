@@ -6,21 +6,21 @@
 <title>Nouk Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --c1: #2563eb; --c1d: #1d4ed8; --c2: #16a34a; --c2d: #15803d;
-  --danger: #dc2626; --warn: #d97706;
-  --bg: #f0f2f5; --white: #fff; --border: #e5e7eb;
-  --grey: #9ca3af; --dark: #111827; --muted: #6b7280;
+:root{
+  --c1:#2563eb;--c1d:#1d4ed8;--c1l:#dbeafe;
+  --c2:#16a34a;--c2d:#15803d;--c2l:#dcfce7;
+  --danger:#dc2626;--dangerl:#fee2e2;
+  --warn:#d97706;--warnl:#fef3c7;
+  --bg:#f0f2f5;--white:#fff;--border:#e5e7eb;
+  --grey:#9ca3af;--dark:#111827;--muted:#6b7280;
+  --purple:#7c3aed;--pink:#db2777;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:var(--bg);}
+html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);}
 body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:var(--dark);}
 
 /* ===== AUTH ===== */
-#authScreen{
-  position:fixed;inset:0;z-index:999;background:var(--bg);
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
+#authScreen{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;}
 .auth-card{background:var(--white);border-radius:20px;padding:28px 22px;width:100%;max-width:350px;box-shadow:0 4px 30px rgba(0,0,0,.12);}
 .auth-logo{font-size:40px;text-align:center;margin-bottom:10px;}
 .auth-card h2{font-size:22px;text-align:center;margin-bottom:4px;}
@@ -28,13 +28,13 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 .auth-tabs{display:flex;background:var(--bg);border-radius:12px;padding:3px;margin-bottom:18px;}
 .auth-tab{flex:1;padding:9px;text-align:center;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);transition:all .15s;user-select:none;}
 .auth-tab.active{background:var(--c1);color:#fff;}
-.auth-err{font-size:13px;color:var(--danger);background:#fef2f2;border-radius:10px;padding:9px 12px;margin-bottom:12px;display:none;}
+.auth-err{font-size:13px;color:var(--danger);background:var(--dangerl);border-radius:10px;padding:9px 12px;margin-bottom:12px;display:none;}
 .f{margin-bottom:14px;}
 .f label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px;}
 .f input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;font-family:inherit;outline:none;background:#fafafa;color:var(--dark);transition:border .15s;}
 .f input:focus{border-color:var(--c1);background:#fff;}
-.auth-btn{width:100%;padding:13px;background:var(--c1);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:background .15s;}
-.auth-btn:active{background:var(--c1d);transform:scale(.98);}
+.auth-btn{width:100%;padding:13px;background:var(--c1);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;}
+.auth-btn:active{background:var(--c1d);}
 
 /* ===== APP ===== */
 #app{display:none;height:100dvh;flex-direction:column;}
@@ -42,14 +42,18 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 
 /* header */
 .hdr{height:54px;background:var(--c1);color:#fff;display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.2);}
-.hdr-menu{background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:8px;display:flex;transition:background .15s;}
+.hdr-menu{background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:8px;display:flex;}
 .hdr-menu:active{background:rgba(255,255,255,.2);}
-.hdr-title{flex:1;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hdr-sub{font-size:12px;opacity:.75;white-space:nowrap;}
-.hdr-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.hdr-btn:active{background:rgba(255,255,255,.35);}
+.hdr-info{flex:1;min-width:0;}
+.hdr-title{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-sub{font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-actions{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.hbtn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.hbtn:active{background:rgba(255,255,255,.35);}
+.icon-hbtn{background:rgba(255,255,255,.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.icon-hbtn:active{background:rgba(255,255,255,.35);}
 
-/* status */
+/* status bar */
 .sbar{display:flex;align-items:center;gap:6px;padding:4px 12px;background:#fff;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);flex-shrink:0;}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--c2);flex-shrink:0;}
 .sdot.err{background:var(--danger);}
@@ -59,36 +63,36 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 .app-body{flex:1;display:flex;overflow:hidden;position:relative;}
 
 /* sidebar */
-.sidebar{width:260px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:30;transition:transform .25s ease;}
-.sb-head{padding:14px;border-bottom:1px solid var(--border);}
-.sb-head h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px;}
-.new-room{display:flex;gap:6px;}
-.new-room input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;min-width:0;background:#fafafa;}
-.new-room input:focus{border-color:var(--c1);}
-.new-room button{padding:8px 12px;background:var(--c2);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;}
-.new-room button:active{background:var(--c2d);}
-.room-list{list-style:none;flex:1;overflow-y:auto;padding:8px;}
-.room-item{margin-bottom:2px;}
-.room-btn{width:100%;text-align:left;padding:10px 12px;border-radius:10px;background:none;border:none;cursor:pointer;font-size:14px;font-family:inherit;color:var(--dark);display:flex;align-items:center;gap:8px;transition:background .1s;}
-.room-btn:active{background:var(--bg);}
-.room-item.active .room-btn{background:var(--c1);color:#fff;font-weight:600;}
-.room-item.dm-item .room-btn{color:var(--c2d);}
-.room-item.dm-item.active .room-btn{background:var(--c2);color:#fff;}
-.room-label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px;letter-spacing:.05em;}
-.online-dot{width:8px;height:8px;border-radius:50%;background:var(--c2);flex-shrink:0;}
+.sidebar{width:260px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:30;transition:transform .25s ease;flex-shrink:0;}
+.sb-head{padding:12px;border-bottom:1px solid var(--border);}
+.sb-search{display:flex;background:var(--bg);border-radius:10px;padding:7px 10px;gap:6px;align-items:center;margin-bottom:0;}
+.sb-search input{flex:1;border:none;background:transparent;outline:none;font-size:14px;font-family:inherit;color:var(--dark);min-width:0;}
+.sb-search input::placeholder{color:var(--grey);}
+.room-list{list-style:none;flex:1;overflow-y:auto;padding:6px;}
+.sec-label{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.sec-add{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0 4px;border-radius:4px;}
+.sec-add:hover{color:var(--c1);background:var(--c1l);}
+.room-item{margin-bottom:1px;}
+.rbtn{width:100%;text-align:left;padding:9px 10px;border-radius:10px;background:none;border:none;cursor:pointer;font-size:14px;font-family:inherit;color:var(--dark);display:flex;align-items:center;gap:8px;transition:background .1s;position:relative;}
+.rbtn:active{background:var(--bg);}
+.room-item.active .rbtn{background:var(--c1);color:#fff;}
+.room-item.active.group-item .rbtn{background:var(--purple);}
+.room-item.active.dm-item .rbtn{background:var(--c2);}
+.rbtn .badge{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;}
+.online-ring{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--grey);}
+.online-ring.on{background:var(--c2);}
 
-.sb-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.u-av{width:36px;height:36px;border-radius:50%;background:var(--c1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;}
+.sb-user{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.u-av{width:34px;height:34px;border-radius:50%;background:var(--c1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0;position:relative;}
 .u-av.admin{background:var(--danger);}
+.u-av .u-dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:var(--c2);border:2px solid #fff;}
 .u-info{flex:1;min-width:0;}
-.u-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.u-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .u-role{font-size:11px;color:var(--muted);}
 
-/* overlay */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25;}
 .sb-overlay.show{display:block;}
 
-/* mobile */
 @media(max-width:599px){
   .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);}
   .sidebar.open{transform:translateX(0);}
@@ -98,24 +102,49 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
   .sidebar{transform:none!important;position:static;}
 }
 
-/* chat */
+/* chat area */
 .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:3px;-webkit-overflow-scrolling:touch;}
+.messages{flex:1;overflow-y:auto;padding:10px 12px 4px;display:flex;flex-direction:column;gap:2px;-webkit-overflow-scrolling:touch;}
 
+/* msg bubbles */
 .msg-row{display:flex;flex-direction:column;max-width:80%;}
 .msg-row.me{align-self:flex-end;align-items:flex-end;}
-.msg-row.bot,.msg-row.other{align-self:flex-start;align-items:flex-start;}
+.msg-row.bot,.msg-row.other,.msg-row.group-other{align-self:flex-start;align-items:flex-start;}
 .msg-row.sys{align-self:center;max-width:90%;}
 .msg-sender{font-size:11px;font-weight:700;margin-bottom:3px;padding:0 4px;}
 .msg-row.bot .msg-sender{color:var(--c1);}
 .msg-row.me .msg-sender{color:var(--c2d);}
-.msg-row.other .msg-sender{color:var(--warn);}
-.msg-bubble{padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.5;word-break:break-word;white-space:pre-wrap;}
+.msg-row.other .msg-sender,.msg-row.group-other .msg-sender{color:var(--purple);}
+
+.msg-bubble{padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.5;word-break:break-word;white-space:pre-wrap;position:relative;cursor:pointer;}
 .msg-row.bot .msg-bubble{background:#fff;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:3px solid var(--c1);}
 .msg-row.me .msg-bubble{background:var(--c1);color:#fff;border-bottom-right-radius:4px;}
-.msg-row.other .msg-bubble{background:#fff;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:3px solid var(--warn);}
-.msg-row.sys .msg-bubble{background:rgba(0,0,0,.05);color:var(--muted);font-size:12px;padding:5px 14px;border-radius:12px;text-align:center;}
-.msg-time{font-size:11px;color:var(--grey);margin-top:3px;padding:0 4px;}
+.msg-row.other .msg-bubble,.msg-row.group-other .msg-bubble{background:#fff;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-left:3px solid var(--purple);}
+.msg-row.sys .msg-bubble{background:rgba(0,0,0,.05);color:var(--muted);font-size:12px;padding:4px 12px;border-radius:12px;text-align:center;cursor:default;}
+
+/* reply preview */
+.reply-preview{font-size:12px;padding:6px 10px;border-radius:8px;margin-bottom:4px;background:var(--bg);border-left:3px solid var(--c1);color:var(--muted);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.msg-row.me .reply-preview{border-left-color:rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);}
+
+.msg-time{font-size:11px;color:var(--grey);margin-top:3px;padding:0 4px;display:flex;align-items:center;gap:3px;}
+.msg-row.me .msg-time{color:rgba(255,255,255,.55);justify-content:flex-end;}
+.status-icon{font-size:11px;line-height:1;}
+.status-sending .status-icon::after{content:"🕐";}
+.status-sent .status-icon::after{content:"✓";color:rgba(255,255,255,.6);}
+.status-delivered .status-icon::after{content:"✓✓";color:rgba(255,255,255,.6);}
+.status-read .status-icon::after{content:"✓✓";color:#60d0ff;}
+.status-failed .status-icon::after{content:"⚠️";}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.msg-row.new-msg{animation:msgIn .15s ease forwards;}
+.msg-reactions{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;padding:0 4px;}
+.reaction-pill{font-size:12px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:2px 7px;cursor:pointer;display:flex;align-items:center;gap:3px;transition:all .1s;}
+.reaction-pill:active{transform:scale(.9);}
+.reaction-pill.mine{background:var(--c1l);border-color:var(--c1);}
+
+/* emoji picker */
+.emoji-bar{position:absolute;bottom:calc(100% + 4px);left:0;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);padding:6px 8px;display:none;flex-wrap:wrap;gap:4px;z-index:50;font-size:20px;}
+.msg-bubble:hover .emoji-bar{display:flex;}
+@media(hover:none){.emoji-bar{display:none!important;}} /* hide on touch, use long press instead */
 
 /* typing */
 .typing-row{align-self:flex-start;display:flex;flex-direction:column;}
@@ -126,7 +155,19 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 @keyframes bonce{0%,80%,100%{transform:translateY(0);opacity:.4;}40%{transform:translateY(-5px);opacity:1;}}
 
 /* input */
-.input-wrap{padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom,8px));background:#fff;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+.input-wrap{padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom,8px));background:#fff;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.reply-bar{display:none;background:var(--bg);border-radius:10px;padding:7px 10px;font-size:13px;color:var(--muted);align-items:center;gap:8px;}
+.reply-bar.show{display:flex;}
+.reply-bar span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reply-close{background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:0;}
+.search-bar{display:none;background:var(--bg);border-radius:10px;padding:7px 12px;align-items:center;gap:8px;}
+.search-bar.show{display:flex;}
+.search-bar input{flex:1;border:none;background:transparent;outline:none;font-size:14px;font-family:inherit;}
+.search-results{max-height:200px;overflow-y:auto;background:#fff;border-radius:10px;border:1px solid var(--border);padding:4px;}
+.search-result-item{padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);}
+.search-result-item:last-child{border:none;}
+.search-result-item:hover{background:var(--bg);}
+.input-row{display:flex;gap:8px;align-items:flex-end;}
 .msg-inp{flex:1;border:1.5px solid var(--border);border-radius:22px;padding:10px 16px;font-size:16px;font-family:inherit;resize:none;outline:none;max-height:120px;overflow-y:auto;background:#fafafa;line-height:1.4;transition:border .15s;color:var(--dark);}
 .msg-inp:focus{border-color:var(--c1);background:#fff;}
 .msg-inp::placeholder{color:#bbb;}
@@ -134,19 +175,46 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 .send-btn:active{background:var(--c1d);transform:scale(.9);}
 .send-btn:disabled{background:#ccc;cursor:default;transform:none;}
 
-/* admin modal */
-#adminModal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;}
-#adminModal.show{display:flex;}
-.admin-card{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:80dvh;display:flex;flex-direction:column;}
+/* modals */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.show{display:flex;}
+@media(min-width:500px){.modal-overlay{align-items:center;padding:16px;}}
+.modal-card{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:90dvh;display:flex;flex-direction:column;}
+@media(min-width:500px){.modal-card{border-radius:16px;max-height:80dvh;}}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.modal-head h3{font-size:18px;}
-.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);}
-.user-list{overflow-y:auto;flex:1;}
+.modal-head h3{font-size:18px;font-weight:700;}
+.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.close-btn:hover{background:var(--bg);}
+.modal-body{overflow-y:auto;flex:1;}
+.modal-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;}
+.modal-input:focus{border-color:var(--c1);}
+.modal-btn{width:100%;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;}
+.modal-btn.primary{background:var(--c1);color:#fff;}
+.modal-btn.danger{background:var(--danger);color:#fff;}
+.modal-btn.success{background:var(--c2);color:#fff;}
+.check-list{list-style:none;max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;}
+.check-item:last-child{border:none;}
+.check-item input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--c1);}
+.check-item:hover{background:var(--bg);}
 .user-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:8px;}
 .user-row:last-child{border:none;}
 .btn-sm{padding:6px 12px;font-size:12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-weight:600;}
-.btn-warn{background:#fef3c7;color:#92400e;}
-.btn-danger{background:#fee2e2;color:#991b1b;}
+.btn-warn{background:var(--warnl);color:#92400e;}
+.btn-danger{background:var(--dangerl);color:#991b1b;}
+.member-av{width:30px;height:30px;border-radius:50%;background:var(--c1);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.pin-item{padding:10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.pin-item:last-child{border:none;}
+.pin-text{font-size:13px;flex:1;word-break:break-word;}
+.pin-meta{font-size:11px;color:var(--muted);}
+
+/* context menu */
+.ctx-menu{position:fixed;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.15);padding:6px;z-index:200;display:none;min-width:160px;}
+.ctx-menu.show{display:block;}
+.ctx-item{padding:10px 14px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px;}
+.ctx-item:hover{background:var(--bg);}
+.ctx-item.danger{color:var(--danger);}
+.ctx-sep{height:1px;background:var(--border);margin:4px 0;}
 </style>
 </head>
 <body>
@@ -168,16 +236,86 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
   </div>
 </div>
 
-<!-- ADMIN MODAL -->
-<div id="adminModal">
-  <div class="admin-card">
-    <div class="modal-head"><h3>⚙️ Admin Panel</h3><button class="close-btn" onclick="closeAdmin()">✕</button></div>
-    <div class="user-list" id="userList"></div>
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSb()"></div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" onclick="ctxReply()">↩️ Reply</div>
+  <div class="ctx-item" onclick="ctxReact()">😊 React</div>
+  <div class="ctx-item" id="ctxPinItem" onclick="ctxPin()" style="display:none">📌 Pin</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item" onclick="ctxSearch()">🔍 ค้นหาในห้องนี้</div>
+</div>
+
+<!-- EMOJI PICKER MODAL -->
+<div class="modal-overlay" id="emojiModal">
+  <div class="modal-card" style="max-height:300px">
+    <div class="modal-head"><h3>เลือก Emoji</h3><button class="close-btn" onclick="closeModal('emojiModal')">✕</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:28px;padding:8px;">
+      <span onclick="pickEmoji('👍')" style="cursor:pointer">👍</span>
+      <span onclick="pickEmoji('❤️')" style="cursor:pointer">❤️</span>
+      <span onclick="pickEmoji('😂')" style="cursor:pointer">😂</span>
+      <span onclick="pickEmoji('😮')" style="cursor:pointer">😮</span>
+      <span onclick="pickEmoji('😢')" style="cursor:pointer">😢</span>
+      <span onclick="pickEmoji('😡')" style="cursor:pointer">😡</span>
+      <span onclick="pickEmoji('🔥')" style="cursor:pointer">🔥</span>
+      <span onclick="pickEmoji('✅')" style="cursor:pointer">✅</span>
+      <span onclick="pickEmoji('👀')" style="cursor:pointer">👀</span>
+      <span onclick="pickEmoji('💀')" style="cursor:pointer">💀</span>
+      <span onclick="pickEmoji('🤯')" style="cursor:pointer">🤯</span>
+      <span onclick="pickEmoji('💯')" style="cursor:pointer">💯</span>
+    </div>
   </div>
 </div>
 
-<!-- SIDEBAR OVERLAY -->
-<div class="sb-overlay" id="sbOverlay" onclick="closeSb()"></div>
+<!-- CREATE GROUP MODAL -->
+<div class="modal-overlay" id="createGroupModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>➕ สร้างกลุ่ม</h3><button class="close-btn" onclick="closeModal('createGroupModal')">✕</button></div>
+    <div class="modal-body">
+      <input class="modal-input" id="groupName" placeholder="ชื่อกลุ่ม">
+      <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;">เลือกสมาชิก</div>
+      <ul class="check-list" id="memberCheckList"></ul>
+      <button class="modal-btn primary" onclick="doCreateGroup()">สร้างกลุ่ม</button>
+    </div>
+  </div>
+</div>
+
+<!-- GROUP INFO MODAL -->
+<div class="modal-overlay" id="groupInfoModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="giName">ข้อมูลกลุ่ม</h3><button class="close-btn" onclick="closeModal('groupInfoModal')">✕</button></div>
+    <div class="modal-body" id="groupInfoBody"></div>
+  </div>
+</div>
+
+<!-- PINS MODAL -->
+<div class="modal-overlay" id="pinsModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>📌 ข้อความที่ปักหมุด</h3><button class="close-btn" onclick="closeModal('pinsModal')">✕</button></div>
+    <div class="modal-body" id="pinsBody"></div>
+  </div>
+</div>
+
+<!-- INVITE MODAL -->
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal-card" style="max-height:400px">
+    <div class="modal-head"><h3>➕ เชิญสมาชิก</h3><button class="close-btn" onclick="closeModal('inviteModal')">✕</button></div>
+    <div class="modal-body">
+      <ul class="check-list" id="inviteList"></ul>
+      <button class="modal-btn success" onclick="doInvite()">เชิญ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-card">
+    <div class="modal-head"><h3>⚙️ Admin Panel</h3><button class="close-btn" onclick="closeModal('adminModal')">✕</button></div>
+    <div class="modal-body" id="adminBody"></div>
+  </div>
+</div>
 
 <!-- APP -->
 <div id="app">
@@ -185,18 +323,23 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
     <button class="hdr-menu" onclick="toggleSb()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
     </button>
-    <div style="flex:1;min-width:0;">
+    <div class="hdr-info">
       <div class="hdr-title" id="hdrTitle"># general</div>
       <div class="hdr-sub" id="hdrSub"></div>
     </div>
-    <button class="hdr-btn" id="adminBtn" onclick="openAdmin()" style="display:none">⚙️</button>
-    <button class="hdr-btn" onclick="doLogout()">ออก</button>
+    <div class="hdr-actions">
+      <button class="icon-hbtn" id="searchBtn" onclick="toggleSearch()" title="ค้นหา">🔍</button>
+      <button class="icon-hbtn" id="pinBtn" onclick="openPins()" style="display:none" title="ข้อความปักหมุด">📌</button>
+      <button class="icon-hbtn" id="groupInfoBtn" onclick="openGroupInfo()" style="display:none" title="ข้อมูลกลุ่ม">👥</button>
+      <button class="icon-hbtn" id="adminBtn" onclick="openAdmin()" style="display:none" title="Admin">⚙️</button>
+      <button class="hbtn" onclick="doLogout()">ออก</button>
+    </div>
   </div>
 
   <div class="sbar">
     <div class="sdot" id="sdot"></div>
     <span id="stext">กำลังเชื่อมต่อ...</span>
-    <select class="msel" id="modelSel">
+    <select class="msel" id="modelSel" style="display:none">
       <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
       <option value="llama-3.1-8b-instant">Llama 3.1 8B ⚡</option>
       <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
@@ -207,20 +350,17 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
   <div class="app-body">
     <div class="sidebar" id="sidebar">
       <div class="sb-head">
-        <h3>ห้องแชท</h3>
-        <form class="new-room" onsubmit="createRoom(event)">
-          <input type="text" id="newRoom" placeholder="ห้องใหม่" autocapitalize="none">
-          <button type="submit">+</button>
-        </form>
+        <div class="sb-search">
+          <span>🔍</span>
+          <input type="text" placeholder="ค้นหา..." id="sbSearch" oninput="filterSidebar(this.value)">
+        </div>
       </div>
-
       <ul class="room-list" id="roomList"></ul>
-
       <div class="sb-user">
-        <div class="u-av" id="uAv">U</div>
+        <div class="u-av" id="uAv">U<div class="u-dot"></div></div>
         <div class="u-info">
           <div class="u-name" id="uName">User</div>
-          <div class="u-role" id="uRole">Member</div>
+          <div class="u-role" id="uRole">Online</div>
         </div>
       </div>
     </div>
@@ -228,12 +368,23 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
     <div class="chat-area">
       <div class="messages" id="messages"></div>
       <div class="input-wrap">
-        <textarea class="msg-inp" id="msgInp" placeholder="พิมพ์ข้อความ..." rows="1"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"
-          readonly></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMsg()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
+        <div class="reply-bar" id="replyBar">
+          <span>↩️ <span id="replyText"></span></span>
+          <button class="reply-close" onclick="cancelReply()">✕</button>
+        </div>
+        <div class="search-bar" id="searchBar">
+          <span>🔍</span>
+          <input type="text" placeholder="ค้นหาข้อความ..." id="searchInput" oninput="doSearch(this.value)">
+          <button class="reply-close" onclick="closeSearchBar()">✕</button>
+        </div>
+        <div id="searchResults" class="search-results" style="display:none"></div>
+        <div class="input-row">
+          <textarea class="msg-inp" id="msgInp" placeholder="พิมพ์ข้อความ..." rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)" readonly></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -243,43 +394,42 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 const API = window.location.origin;
 let me = null;
 let authMode = 'login';
+let mode = 'room'; // 'room' | 'dm' | 'group'
 let currentRoom = 'general';
-let currentDM = null; // username ถ้าเป็น DM
+let currentDM = null;
+let currentGroup = null; // {id, name, members, creator}
 let rooms = JSON.parse(localStorage.getItem('chatRooms') || '["general","random"]');
-let histories = {}; // room => [{role,content}]
-let dmUsers = []; // list of users for DM
+let histories = {};
+let allUsers = [];
+let myGroups = [];
+let unreadCounts = {};
 let isTyping = false;
 let botName = 'Nouk_Bot';
+let replyTo = null; // {id, text}
+let ctxMsgData = null; // current context menu target
+let longPressTimer = null;
 
 // ===== AUTH =====
-function switchTab(mode) {
-  authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active',(i===0&&mode==='login')||(i===1&&mode==='register')));
-  document.getElementById('authBtn').textContent = mode==='login'?'เข้าสู่ระบบ':'สมัครสมาชิก';
+function switchTab(t) {
+  authMode = t;
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('authBtn').textContent = t==='login'?'เข้าสู่ระบบ':'สมัครสมาชิก';
   document.getElementById('authErr').style.display='none';
 }
-
 async function doAuth() {
-  const username = document.getElementById('authUser').value.trim();
-  const password = document.getElementById('authPass').value.trim();
-  showAuthErr('');
-  if (!username||!password){showAuthErr('กรุณากรอกข้อมูล');return;}
-  try {
-    const res = await fetch(`${API}/${authMode}`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
-    const data = await res.json();
-    if (data.ok){me=data;initApp();}
-    else showAuthErr(data.error||'เกิดข้อผิดพลาด');
-  } catch {showAuthErr('เชื่อมต่อ server ไม่ได้');}
+  const u=document.getElementById('authUser').value.trim(), p=document.getElementById('authPass').value.trim();
+  document.getElementById('authErr').style.display='none';
+  if(!u||!p){showAE('กรุณากรอกข้อมูล');return;}
+  try{
+    const res=await fetch(`${API}/${authMode}`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    const d=await res.json();
+    if(d.ok){me=d;initApp();}else showAE(d.error||'เกิดข้อผิดพลาด');
+  }catch{showAE('เชื่อมต่อ server ไม่ได้');}
 }
-
-function showAuthErr(msg) {
-  const el = document.getElementById('authErr');
-  if(msg){el.textContent=msg;el.style.display='block';}else el.style.display='none';
-}
-
-async function doLogout() {
+function showAE(m){const e=document.getElementById('authErr');e.textContent=m;e.style.display='block';}
+async function doLogout(){
   await fetch(`${API}/logout`,{method:'POST',credentials:'include'});
-  me=null;histories={};currentDM=null;
+  me=null;histories={};currentDM=null;currentGroup=null;mode='room';
   document.getElementById('app').classList.remove('show');
   document.getElementById('authScreen').style.display='flex';
   document.getElementById('messages').innerHTML='';
@@ -289,285 +439,564 @@ async function doLogout() {
 async function initApp() {
   document.getElementById('authScreen').style.display='none';
   document.getElementById('app').classList.add('show');
-  document.getElementById('uName').textContent = me.username;
-  document.getElementById('uAv').textContent = me.username[0].toUpperCase();
+  document.getElementById('uName').textContent=me.username;
+  document.getElementById('uAv').textContent=me.username[0].toUpperCase();
   if(me.is_admin){
     document.getElementById('uRole').textContent='👑 Admin';
     document.getElementById('uAv').classList.add('admin');
     document.getElementById('adminBtn').style.display='';
   }
-  // enable input
   document.getElementById('msgInp').removeAttribute('readonly');
-  await loadUsers();
+  await Promise.all([loadUsers(), loadGroups()]);
   renderSidebar();
   selectRoom('general');
   checkStatus();
-
-  // keyboard fix for mobile — show only on focus
-  const inp = document.getElementById('msgInp');
-  inp.addEventListener('focus', () => { setTimeout(scrollBottom, 300); });
+  setInterval(pollUpdates, 4000);
+  setInterval(()=>fetch(`${API}/ping`,{method:'POST',credentials:'include'}), 20000);
 }
 
 async function loadUsers() {
+  try{const r=await fetch(`${API}/users`,{credentials:'include'});const d=await r.json();allUsers=d.users||[];}catch{}
+}
+async function loadGroups() {
+  try{const r=await fetch(`${API}/groups`,{credentials:'include'});const d=await r.json();myGroups=d.groups||[];}catch{}
+}
+
+// ===== POLL =====
+async function pollUpdates() {
+  await Promise.all([loadUsers(), loadGroups()]);
+  // poll active chat
+  if(mode==='dm'&&currentDM) await pollDM();
+  if(mode==='group'&&currentGroup) await pollGroup();
+  renderSidebar();
+}
+
+async function pollDM() {
   try {
-    const res = await fetch(`${API}/users`,{credentials:'include'});
-    const data = await res.json();
-    dmUsers = data.users || [];
-  } catch {}
+    const r=await fetch(`${API}/dm/history/${currentDM}`,{credentials:'include'});
+    const d=await r.json();
+    const key=`dm_${currentDM}`;
+    const prev=(histories[key]||[]).length;
+    histories[key]=(d.messages||[]).map(m=>({
+      id:m.id, role:m.sender===me.username?'me':'other',
+      content:m.message, sender:m.sender, reply_to:m.reply_to, created_at:m.created_at
+    }));
+    if(histories[key].length>prev) renderMessages();
+  }catch{}
+}
+
+async function pollGroup() {
+  if(!currentGroup) return;
+  try {
+    const r=await fetch(`${API}/groups/${currentGroup.id}/messages`,{credentials:'include'});
+    const d=await r.json();
+    const key=`grp_${currentGroup.id}`;
+    const prev=(histories[key]||[]).length;
+    histories[key]=(d.messages||[]).map(m=>({
+      id:m.id, role:m.sender===me.username?'me':(m.sender==='system'?'sys':'group-other'),
+      content:m.message, sender:m.sender, reply_to:m.reply_to, created_at:m.created_at
+    }));
+    if(histories[key].length>prev) renderMessages();
+  }catch{}
 }
 
 // ===== SIDEBAR =====
-function renderSidebar() {
-  const ul = document.getElementById('roomList');
-  ul.innerHTML = '';
+function filterSidebar(q) { renderSidebar(q.toLowerCase()); }
 
-  // Room section
-  const roomLabel = document.createElement('li');
-  roomLabel.innerHTML = '<div class="room-label">📢 Rooms</div>';
-  ul.appendChild(roomLabel);
+function renderSidebar(filter='') {
+  const ul=document.getElementById('roomList');
+  ul.innerHTML='';
 
-  rooms.forEach(r => {
-    const li = document.createElement('li');
-    li.className = 'room-item' + (currentRoom===r && !currentDM ? ' active' : '');
-    li.dataset.room = r;
-    const btn = document.createElement('button');
-    btn.className = 'room-btn';
-    btn.innerHTML = `<span>#</span>${r}`;
-    btn.addEventListener('click', () => selectRoom(r));
-    li.appendChild(btn);
-    ul.appendChild(li);
+  // Rooms
+  const rl=document.createElement('li');
+  rl.innerHTML=`<div class="sec-label"><span>📢 Rooms</span><button class="sec-add" onclick="showCreateRoom()" title="สร้างห้อง">+</button></div>`;
+  ul.appendChild(rl);
+  rooms.filter(r=>!filter||r.includes(filter)).forEach(r=>{
+    const li=document.createElement('li');
+    li.className='room-item'+(mode==='room'&&currentRoom===r?' active':'');
+    const u=unreadCounts['room_'+r]||0;
+    const btn=document.createElement('button');
+    btn.className='rbtn';
+    btn.innerHTML=`<span>🤖</span>${r}${u>0?`<span class="badge">${u}</span>`:''}`;
+    btn.addEventListener('click',()=>selectRoom(r));
+    li.appendChild(btn);ul.appendChild(li);
   });
 
-  // DM section
-  if (dmUsers.length > 0) {
-    const dmLabel = document.createElement('li');
-    dmLabel.innerHTML = '<div class="room-label">💬 Direct Messages</div>';
-    ul.appendChild(dmLabel);
+  // Groups
+  const gl=document.createElement('li');
+  gl.innerHTML=`<div class="sec-label"><span>👥 Groups</span><button class="sec-add" onclick="openCreateGroup()" title="สร้างกลุ่ม">+</button></div>`;
+  ul.appendChild(gl);
+  myGroups.filter(g=>!filter||g.name.toLowerCase().includes(filter)).forEach(g=>{
+    const li=document.createElement('li');
+    li.className='room-item group-item'+(mode==='group'&&currentGroup?.id===g.id?' active':'');
+    const u=unreadCounts['grp_'+g.id]||0;
+    const btn=document.createElement('button');
+    btn.className='rbtn';
+    btn.innerHTML=`<span>🔒</span>${g.name}${u>0?`<span class="badge">${u}</span>`:''}`;
+    btn.addEventListener('click',()=>selectGroup(g));
+    li.appendChild(btn);ul.appendChild(li);
+  });
 
-    dmUsers.forEach(u => {
-      const li = document.createElement('li');
-      li.className = 'room-item dm-item' + (currentDM===u.username ? ' active' : '');
-      const btn = document.createElement('button');
-      btn.className = 'room-btn';
-      btn.innerHTML = `<span class="online-dot"></span>${u.username}${u.is_admin?' 👑':''}`;
-      btn.addEventListener('click', () => selectDM(u.username));
-      li.appendChild(btn);
-      ul.appendChild(li);
-    });
-  }
+  // DMs
+  const dl=document.createElement('li');
+  dl.innerHTML=`<div class="sec-label"><span>💬 Direct Messages</span></div>`;
+  ul.appendChild(dl);
+  allUsers.filter(u=>!filter||u.username.toLowerCase().includes(filter)).forEach(u=>{
+    const li=document.createElement('li');
+    li.className='room-item dm-item'+(mode==='dm'&&currentDM===u.username?' active':'');
+    const unread=unreadCounts['dm_'+u.username]||0;
+    const btn=document.createElement('button');
+    btn.className='rbtn';
+    btn.innerHTML=`<div class="online-ring ${u.is_online?'on':''}"></div>${u.username}${u.is_admin?' 👑':''}${unread>0?`<span class="badge">${unread}</span>`:''}`;
+    btn.addEventListener('click',()=>selectDM(u.username));
+    li.appendChild(btn);ul.appendChild(li);
+  });
 }
 
-function selectRoom(room) {
-  currentRoom = room;
-  currentDM = null;
+function showCreateRoom() {
+  const name=prompt('ชื่อห้องใหม่:');
+  if(!name) return;
+  const n=name.trim().replace(/\s+/g,'-').toLowerCase();
+  if(!n||rooms.includes(n)) return;
+  rooms.push(n);localStorage.setItem('chatRooms',JSON.stringify(rooms));
+  renderSidebar();selectRoom(n);
+}
+
+// ===== SELECT =====
+function selectRoom(r) {
+  mode='room';currentRoom=r;currentDM=null;currentGroup=null;
+  unreadCounts['room_'+r]=0;
   closeSb();
-  document.getElementById('hdrTitle').textContent = `# ${room}`;
-  document.getElementById('hdrSub').textContent = 'ห้องแชทกลุ่ม';
-  renderSidebar();
-  renderMessages();
-  document.getElementById('msgInp').placeholder = `พิมพ์ข้อความใน #${room}...`;
+  document.getElementById('hdrTitle').textContent=`🤖 ${r}`;
+  document.getElementById('hdrSub').textContent='AI Chat';
+  document.getElementById('pinBtn').style.display='none';
+  document.getElementById('groupInfoBtn').style.display='none';
+  document.getElementById('modelSel').style.display='';
+  document.getElementById('msgInp').placeholder=`พิมพ์ข้อความ...`;
+  renderSidebar();renderMessages();
 }
 
 async function selectDM(username) {
-  currentDM = username;
-  currentRoom = null;
+  mode='dm';currentDM=username;currentRoom=null;currentGroup=null;
+  unreadCounts['dm_'+username]=0;
   closeSb();
-  document.getElementById('hdrTitle').textContent = `@ ${username}`;
-  document.getElementById('hdrSub').textContent = 'Direct Message';
+  const u=allUsers.find(x=>x.username===username);
+  document.getElementById('hdrTitle').textContent=`@ ${username}`;
+  document.getElementById('hdrSub').textContent=u?.is_online?'🟢 Online':'⚫ Offline';
+  document.getElementById('pinBtn').style.display='none';
+  document.getElementById('groupInfoBtn').style.display='none';
+  document.getElementById('modelSel').style.display='none';
+  document.getElementById('msgInp').placeholder=`ส่งข้อความหา ${username}...`;
   renderSidebar();
-  await loadDMHistory(username);
-  document.getElementById('msgInp').placeholder = `ส่งข้อความหา ${username}...`;
+  await pollDM();
 }
 
-function createRoom(e) {
-  e.preventDefault();
-  const inp = document.getElementById('newRoom');
-  const name = inp.value.trim().replace(/\s+/g,'-').toLowerCase();
-  if(!name||rooms.includes(name)){inp.value='';return;}
-  rooms.push(name);
-  localStorage.setItem('chatRooms',JSON.stringify(rooms));
-  inp.value='';
+async function selectGroup(g) {
+  mode='group';currentGroup=g;currentDM=null;currentRoom=null;
+  unreadCounts['grp_'+g.id]=0;
+  closeSb();
+  document.getElementById('hdrTitle').textContent=`👥 ${g.name}`;
+  document.getElementById('hdrSub').textContent=`${(g.members||[]).length} สมาชิก`;
+  document.getElementById('pinBtn').style.display='';
+  document.getElementById('groupInfoBtn').style.display='';
+  document.getElementById('modelSel').style.display='none';
+  document.getElementById('msgInp').placeholder=`ส่งข้อความในกลุ่ม ${g.name}...`;
   renderSidebar();
-  selectRoom(name);
+  await pollGroup();
 }
-
-// sidebar toggle
-function toggleSb(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('show');}
-function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');}
 
 // ===== MESSAGES =====
 function renderMessages() {
-  const el = document.getElementById('messages');
+  const el=document.getElementById('messages');
+  const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<100;
   el.innerHTML='';
-  const key = currentDM ? `dm_${currentDM}` : currentRoom;
-  (histories[key]||[]).forEach(m=>addBubble(m.role,m.content,m.sender,false));
-  scrollBottom();
+  let key;
+  if(mode==='room') key=currentRoom;
+  else if(mode==='dm') key=`dm_${currentDM}`;
+  else key=`grp_${currentGroup?.id}`;
+  (histories[key]||[]).forEach(m=>addBubble(m,false));
+  if(atBottom) el.scrollTop=el.scrollHeight;
 }
 
-async function loadDMHistory(username) {
-  const key = `dm_${username}`;
-  try {
-    const res = await fetch(`${API}/dm/history/${username}`,{credentials:'include'});
-    const data = await res.json();
-    histories[key] = (data.messages||[]).map(m=>({
-      role: m.sender===me.username?'me':'other',
-      content: m.message,
-      sender: m.sender
-    }));
-    renderMessages();
-  } catch {renderMessages();}
+function getTime(ts){
+  if(ts) return new Date(ts).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  return new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
 }
-
-function scrollBottom(){const el=document.getElementById('messages');el.scrollTop=el.scrollHeight;}
-function getTime(){return new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});}
 function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function scrollBottom(){const el=document.getElementById('messages');el.scrollTop=el.scrollHeight;}
 
-function addBubble(role, text, sender, scroll=true) {
-  const el = document.getElementById('messages');
-  const div = document.createElement('div');
+function addBubble(msgData, scroll=true) {
+  const {id,role,content,sender,reply_to,created_at}=msgData;
+  const el=document.getElementById('messages');
 
   if(role==='typing'){
-    div.className='msg-row typing-row';
-    div.id='typingBubble';
-    div.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--c1);margin-bottom:3px;padding:0 4px">${botName}</div><div class="typing-bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
-  } else if(role==='user'||role==='me'){
-    div.className='msg-row me';
-    div.innerHTML=`<div class="msg-sender">${me.username}</div><div class="msg-bubble">${escH(text)}</div><div class="msg-time">${getTime()}</div>`;
-  } else if(role==='assistant'){
-    div.className='msg-row bot';
-    div.innerHTML=`<div class="msg-sender">${botName}</div><div class="msg-bubble">${escH(text)}</div><div class="msg-time">${getTime()}</div>`;
-  } else if(role==='other'){
-    div.className='msg-row other';
-    div.innerHTML=`<div class="msg-sender">${sender||'?'}</div><div class="msg-bubble">${escH(text)}</div><div class="msg-time">${getTime()}</div>`;
+    const div=document.createElement('div');
+    div.className='msg-row typing-row';div.id='typingBubble';
+    div.innerHTML=`<div class="msg-sender">${botName}</div><div class="typing-bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+    el.appendChild(div);if(scroll)scrollBottom();return;
+  }
+
+  const div=document.createElement('div');
+  div.className=`msg-row ${role} new-msg`;
+  if(id) div.dataset.msgId=id;
+  div.dataset.msgText=content||'';
+  div.dataset.sender=sender||'';
+
+  let replyHtml='';
+  if(reply_to){
+    replyHtml=`<div class="reply-preview">↩️ ${escH(String(reply_to).substring(0,60))}</div>`;
+  }
+
+  if(role==='sys'){
+    div.innerHTML=`<div class="msg-bubble">${escH(content)}</div>`;
   } else {
-    div.className='msg-row sys';
-    div.innerHTML=`<div class="msg-bubble">${escH(text)}</div>`;
+    const nameEl = role!=='me' ? `<div class="msg-sender">${sender||'?'}</div>` : `<div class="msg-sender">${me.username}</div>`;
+    div.innerHTML=`
+      ${nameEl}
+      ${replyHtml}
+      <div class="msg-bubble" id="mb_${id||Date.now()}">${escH(content)}</div>
+      <div class="msg-time status-delivered" id="st_${id||'t'+Date.now()}">${getTime(created_at)}<span class="status-icon"></span></div>
+      <div class="msg-reactions" id="rx_${id||''}"></div>`;
+
+    const bubble=div.querySelector('.msg-bubble');
+    if(bubble){
+      // long press for context menu on mobile
+      bubble.addEventListener('touchstart',e=>{longPressTimer=setTimeout(()=>{showCtx(e.touches[0].clientX,e.touches[0].clientY,msgData);},500);},{passive:true});
+      bubble.addEventListener('touchend',()=>clearTimeout(longPressTimer));
+      bubble.addEventListener('touchmove',()=>clearTimeout(longPressTimer));
+      // right click on desktop
+      bubble.addEventListener('contextmenu',e=>{e.preventDefault();showCtx(e.clientX,e.clientY,msgData);});
+    }
   }
 
   el.appendChild(div);
-  if(scroll) scrollBottom();
+  if(scroll)scrollBottom();
 }
+
+// ===== CONTEXT MENU =====
+function showCtx(x, y, msgData) {
+  ctxMsgData=msgData;
+  const menu=document.getElementById('ctxMenu');
+  document.getElementById('ctxPinItem').style.display=mode==='group'?'':'none';
+  menu.style.left=Math.min(x,window.innerWidth-180)+'px';
+  menu.style.top=Math.min(y,window.innerHeight-200)+'px';
+  menu.classList.add('show');
+}
+function hideCtx(){document.getElementById('ctxMenu').classList.remove('show');}
+document.addEventListener('click',e=>{if(!e.target.closest('#ctxMenu'))hideCtx();});
+
+function ctxReply(){
+  if(!ctxMsgData)return;hideCtx();
+  replyTo={text:ctxMsgData.content};
+  document.getElementById('replyText').textContent=(ctxMsgData.sender||'')+(ctxMsgData.content?': '+ctxMsgData.content.substring(0,50):'');
+  document.getElementById('replyBar').classList.add('show');
+  document.getElementById('msgInp').focus();
+}
+function ctxReact(){if(!ctxMsgData)return;hideCtx();openModal('emojiModal');}
+async function ctxPin(){
+  if(!ctxMsgData||!currentGroup)return;hideCtx();
+  await fetch(`${API}/groups/${currentGroup.id}/pin`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg_id:ctxMsgData.id,msg_text:ctxMsgData.content})});
+  showToast('📌 ปักหมุดแล้ว');
+}
+function ctxSearch(){hideCtx();toggleSearch();}
+
+async function pickEmoji(emoji) {
+  closeModal('emojiModal');
+  if(!ctxMsgData?.id)return;
+  const msgType=mode==='group'?'group':'dm';
+  await fetch(`${API}/react`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg_id:ctxMsgData.id,msg_type:msgType,emoji})});
+  showToast(`${emoji} แล้ว`);
+}
+
+function cancelReply(){replyTo=null;document.getElementById('replyBar').classList.remove('show');}
 
 // ===== SEND =====
 async function sendMsg() {
-  const inp = document.getElementById('msgInp');
-  const text = inp.value.trim();
-  if(!text||isTyping) return;
-  inp.value=''; autoResize(inp);
+  const inp=document.getElementById('msgInp');
+  const text=inp.value.trim();
+  if(!text||isTyping)return;
+  inp.value='';autoResize(inp);
   document.getElementById('sendBtn').disabled=true;
+  const rto=replyTo?replyTo.text:null;
+  cancelReply();
 
-  if(currentDM) {
-    // DM mode
+  if(mode==='dm') {
     const key=`dm_${currentDM}`;
-    if(!histories[key]) histories[key]=[];
-    histories[key].push({role:'me',content:text,sender:me.username});
-    addBubble('me', text, me.username);
-    try {
-      const res = await fetch(`${API}/dm/send`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({receiver:currentDM,message:text})});
-      const data = await res.json();
-      if(!data.ok) addBubble('sys','ส่งไม่ได้: '+(data.error||'error'));
-    } catch { addBubble('sys','เชื่อมต่อไม่ได้'); }
+    if(!histories[key])histories[key]=[];
+    const msgId='t'+Date.now();
+    const msg={id:msgId,role:'me',content:text,sender:me.username,reply_to:rto,created_at:new Date().toISOString()};
+    histories[key].push(msg);addBubble(msg);
+    setStatus(msgId,'sending');
+    try{
+      await fetch(`${API}/dm/send`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({receiver:currentDM,message:text,reply_to:rto})});
+      setStatus(msgId,'sent');setTimeout(()=>setStatus(msgId,'delivered'),800);
+    }catch{setStatus(msgId,'failed');}
+
+  } else if(mode==='group') {
+    const key=`grp_${currentGroup.id}`;
+    if(!histories[key])histories[key]=[];
+    const msgId='t'+Date.now();
+    const msg={id:msgId,role:'me',content:text,sender:me.username,reply_to:rto,created_at:new Date().toISOString()};
+    histories[key].push(msg);addBubble(msg);
+    setStatus(msgId,'sending');
+    try{
+      await fetch(`${API}/groups/${currentGroup.id}/send`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,reply_to:rto})});
+      setStatus(msgId,'sent');setTimeout(()=>setStatus(msgId,'delivered'),800);
+    }catch{setStatus(msgId,'failed');}
+
   } else {
-    // AI chat mode
-    const key = currentRoom;
-    if(!histories[key]) histories[key]=[];
-    histories[key].push({role:'user',content:text});
-    addBubble('user',text,me.username);
-    isTyping=true;
-    addBubble('typing','');
-    try {
-      const model = document.getElementById('modelSel').value;
-      const res = await fetch(`${API}/chat`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:histories[key].slice(-14),model,room:currentRoom})});
-      const data = await res.json();
+    // AI room
+    const key=currentRoom;
+    if(!histories[key])histories[key]=[];
+    const aiMsgId='t'+Date.now();
+    const uMsg={id:aiMsgId,role:'user',content:text,sender:me.username,created_at:new Date().toISOString()};
+    histories[key].push(uMsg);addBubble({...uMsg,role:'me'});
+    setStatus(aiMsgId,'sending');
+    isTyping=true;addBubble({role:'typing',content:''});
+    try{
+      const model=document.getElementById('modelSel').value;
+      const r=await fetch(`${API}/chat`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:histories[key].slice(-14),model,room:currentRoom})});
+      setStatus(aiMsgId,'sent');
+      const d=await r.json();
       document.getElementById('typingBubble')?.remove();
-      if(data.reply){
-        histories[key].push({role:'assistant',content:data.reply});
-        addBubble('assistant',data.reply);
-        if(data.key_used) document.getElementById('stext').textContent=`เชื่อมต่อแล้ว • Key ${data.key_used}/${data.total_keys}`;
-      } else if(data.error==='กรุณา login ก่อน'){
-        doLogout();
-      } else {
-        addBubble('assistant','⚠️ '+(data.error||'เกิดข้อผิดพลาด'));
-      }
-    } catch {
-      document.getElementById('typingBubble')?.remove();
-      addBubble('assistant','⚠️ เชื่อมต่อ server ไม่ได้');
-    }
+      if(d.reply){
+        setStatus(aiMsgId,'read');
+        const botMsg={role:'assistant',content:d.reply,sender:botName,created_at:new Date().toISOString()};
+        histories[key].push(botMsg);addBubble(botMsg);
+        if(d.key_used)document.getElementById('stext').textContent=`เชื่อมต่อแล้ว • Key ${d.key_used}/${d.total_keys}`;
+      }else if(d.error==='กรุณา login ก่อน'){doLogout();}
+      else addBubble({role:'sys',content:'⚠️ '+(d.error||'เกิดข้อผิดพลาด')});
+    }catch{document.getElementById('typingBubble')?.remove();setStatus(aiMsgId,'failed');addBubble({role:'sys',content:'⚠️ เชื่อมต่อไม่ได้'});}
     isTyping=false;
   }
-
   document.getElementById('sendBtn').disabled=false;
 }
 
-function handleKey(e) {
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
-}
-function autoResize(el) {
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,120)+'px';
-}
 
-// ===== STATUS =====
-async function checkStatus() {
-  try {
-    const res = await fetch(`${API}/status`,{credentials:'include'});
-    const data = await res.json();
-    if(data.ok){
-      document.getElementById('sdot').className='sdot';
-      document.getElementById('stext').textContent=`เชื่อมต่อแล้ว • Key ${data.current_key}/${data.total_keys}`;
-      if(data.bot_name) botName=data.bot_name;
-    } else {
-      document.getElementById('sdot').className='sdot err';
-      document.getElementById('stext').textContent='เชื่อมต่อไม่ได้';
-    }
-  } catch {
-    document.getElementById('sdot').className='sdot err';
-    document.getElementById('stext').textContent='Server ออฟไลน์';
+function setStatus(msgId, status) {
+  const el = document.getElementById(`st_${msgId}`);
+  if(!el) return;
+  // remove old status classes
+  el.classList.remove('status-sending','status-sent','status-delivered','status-read','status-failed');
+  el.classList.add(`status-${status}`);
+  const labels = {sending:'กำลังส่ง...',sent:'ส่งแล้ว',delivered:'ส่งถึง',read:'อ่านแล้ว',failed:'ส่งไม่ได้ ⚠️'};
+  // update text node (first child = time text)
+  const timeText = el.childNodes[0];
+  if(status === 'sending') {
+    if(timeText && timeText.nodeType===3) timeText.textContent = labels[status]+' ';
+  } else {
+    // restore real time
+    if(timeText && timeText.nodeType===3) timeText.textContent = getTime(new Date().toISOString())+' ';
+    // update tick
+    const span = el.querySelector('.status-icon');
+    if(span) span.title = labels[status]||'';
   }
 }
 
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+
+// ===== SEARCH =====
+function toggleSearch(){
+  const bar=document.getElementById('searchBar');
+  bar.classList.toggle('show');
+  if(bar.classList.contains('show'))document.getElementById('searchInput').focus();
+  else closeSearchBar();
+}
+function closeSearchBar(){
+  document.getElementById('searchBar').classList.remove('show');
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchResults').style.display='none';
+}
+let searchTimer=null;
+async function doSearch(q){
+  clearTimeout(searchTimer);
+  const res=document.getElementById('searchResults');
+  if(!q.trim()){res.style.display='none';return;}
+  searchTimer=setTimeout(async()=>{
+    try{
+      const ctx=mode==='group'?currentGroup?.id:currentDM;
+      const type=mode==='group'?'group':'dm';
+      if(!ctx){res.style.display='none';return;}
+      const r=await fetch(`${API}/search`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,context:ctx,context_type:type})});
+      const d=await r.json();
+      if(!d.results?.length){res.innerHTML='<div style="padding:12px;text-align:center;color:var(--muted);font-size:13px">ไม่พบผลลัพธ์</div>';res.style.display='block';return;}
+      res.innerHTML=d.results.map(m=>`<div class="search-result-item" onclick="scrollToMsg('${m.id}')"><strong>${m.sender}</strong>: ${escH(m.message.substring(0,80))}<div style="font-size:11px;color:var(--muted)">${getTime(m.created_at)}</div></div>`).join('');
+      res.style.display='block';
+    }catch{}
+  },400);
+}
+function scrollToMsg(id){
+  closeSearchBar();
+  const el=document.querySelector(`[data-msg-id="${id}"]`);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.background='#fef3c7';setTimeout(()=>el.style.background='',2000);}
+}
+
+// ===== STATUS =====
+async function checkStatus(){
+  try{
+    const r=await fetch(`${API}/status`,{credentials:'include'});
+    const d=await r.json();
+    if(d.ok){document.getElementById('sdot').className='sdot';document.getElementById('stext').textContent=`เชื่อมต่อแล้ว • Key ${d.current_key}/${d.total_keys}`;if(d.bot_name)botName=d.bot_name;}
+    else{document.getElementById('sdot').className='sdot err';document.getElementById('stext').textContent='เชื่อมต่อไม่ได้';}
+  }catch{document.getElementById('sdot').className='sdot err';document.getElementById('stext').textContent='Server ออฟไลน์';}
+}
+
+// ===== GROUPS =====
+function openCreateGroup(){
+  document.getElementById('groupName').value='';
+  const ul=document.getElementById('memberCheckList');
+  ul.innerHTML=allUsers.map(u=>`<li class="check-item"><input type="checkbox" id="cb_${u.username}" value="${u.username}"><label for="cb_${u.username}">${u.username}${u.is_admin?' 👑':''}</label></li>`).join('');
+  openModal('createGroupModal');
+}
+
+async function doCreateGroup(){
+  const name=document.getElementById('groupName').value.trim();
+  if(!name){showToast('ต้องใส่ชื่อกลุ่ม');return;}
+  const checked=[...document.querySelectorAll('#memberCheckList input:checked')].map(i=>i.value);
+  try{
+    const r=await fetch(`${API}/groups/create`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,members:checked})});
+    const d=await r.json();
+    if(d.ok){closeModal('createGroupModal');await loadGroups();selectGroup(d.group);showToast('✅ สร้างกลุ่มแล้ว');}
+    else showToast('❌ '+d.error);
+  }catch{showToast('เชื่อมต่อไม่ได้');}
+}
+
+async function openGroupInfo(){
+  if(!currentGroup)return;
+  const g=await (await fetch(`${API}/groups/${currentGroup.id}`,{credentials:'include'})).json();
+  currentGroup=g.group||currentGroup;
+  const isCreator=currentGroup.creator===me.username||me.is_admin;
+  document.getElementById('giName').textContent=`👥 ${currentGroup.name}`;
+  const body=document.getElementById('groupInfoBody');
+  body.innerHTML=`
+    <div style="margin-bottom:12px;color:var(--muted);font-size:13px">สร้างโดย: <strong>${currentGroup.creator}</strong></div>
+    <div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-bottom:8px">สมาชิก ${(currentGroup.members||[]).length} คน</div>
+    <div id="membersList" style="margin-bottom:16px"></div>
+    ${isCreator?`<button class="modal-btn success" style="margin-bottom:8px" onclick="openInvite()">➕ เชิญสมาชิก</button>`:''}
+    ${isCreator?`<button class="modal-btn primary" style="margin-bottom:8px" onclick="doRenameGroup()">✏️ เปลี่ยนชื่อกลุ่ม</button>`:''}
+    <button class="modal-btn danger" onclick="doLeaveGroup()">🚪 ออกจากกลุ่ม</button>`;
+  const ml=document.getElementById('membersList');
+  (currentGroup.members||[]).forEach(m=>{
+    const div=document.createElement('div');
+    div.className='user-row';
+    const canKick=isCreator&&m!==currentGroup.creator&&m!==me.username;
+    div.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="member-av">${m[0].toUpperCase()}</div>
+        <div><div style="font-size:14px;font-weight:600">${m}${m===currentGroup.creator?' 👑':''}</div></div>
+      </div>
+      ${canKick?`<button class="btn-sm btn-danger" onclick="doKick('${m}')">Kick</button>`:''}`;
+    ml.appendChild(div);
+  });
+  openModal('groupInfoModal');
+}
+
+function openInvite(){
+  closeModal('groupInfoModal');
+  const members=currentGroup.members||[];
+  const available=allUsers.filter(u=>!members.includes(u.username));
+  if(!available.length){showToast('ไม่มีผู้ใช้ที่จะเชิญแล้ว');return;}
+  document.getElementById('inviteList').innerHTML=available.map(u=>`<li class="check-item"><input type="checkbox" id="inv_${u.username}" value="${u.username}"><label for="inv_${u.username}">${u.username}</label></li>`).join('');
+  openModal('inviteModal');
+}
+
+async function doInvite(){
+  const checked=[...document.querySelectorAll('#inviteList input:checked')].map(i=>i.value);
+  if(!checked.length){showToast('เลือกสมาชิกก่อน');return;}
+  for(const u of checked){
+    await fetch(`${API}/groups/${currentGroup.id}/invite`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})});
+  }
+  closeModal('inviteModal');await loadGroups();showToast('✅ เชิญแล้ว');
+  const g=myGroups.find(x=>x.id===currentGroup.id);if(g)currentGroup=g;
+  document.getElementById('hdrSub').textContent=`${(currentGroup.members||[]).length} สมาชิก`;
+}
+
+async function doKick(username){
+  if(!confirm(`Kick ${username} ออกจากกลุ่ม?`))return;
+  await fetch(`${API}/groups/${currentGroup.id}/kick`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+  closeModal('groupInfoModal');await loadGroups();await pollGroup();showToast('✅ Kick แล้ว');
+}
+
+async function doLeaveGroup(){
+  if(!confirm(`ออกจากกลุ่ม "${currentGroup.name}"?`))return;
+  await fetch(`${API}/groups/${currentGroup.id}/leave`,{method:'POST',credentials:'include'});
+  closeModal('groupInfoModal');await loadGroups();selectRoom('general');showToast('ออกจากกลุ่มแล้ว');
+}
+
+async function doRenameGroup(){
+  const name=prompt('ชื่อกลุ่มใหม่:',currentGroup.name);
+  if(!name||!name.trim())return;
+  await fetch(`${API}/groups/${currentGroup.id}/rename`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name.trim()})});
+  closeModal('groupInfoModal');await loadGroups();
+  const g=myGroups.find(x=>x.id===currentGroup.id);
+  if(g){currentGroup=g;document.getElementById('hdrTitle').textContent=`👥 ${g.name}`;}
+  showToast('✅ เปลี่ยนชื่อแล้ว');
+}
+
+// ===== PINS =====
+async function openPins(){
+  if(!currentGroup)return;
+  const r=await fetch(`${API}/groups/${currentGroup.id}/pins`,{credentials:'include'});
+  const d=await r.json();
+  const body=document.getElementById('pinsBody');
+  if(!d.pins?.length){body.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px">ยังไม่มีข้อความปักหมุด</div>';openModal('pinsModal');return;}
+  body.innerHTML=d.pins.map(p=>`
+    <div class="pin-item">
+      <div><div class="pin-text">${escH(p.msg_text||'')}</div><div class="pin-meta">ปักโดย ${p.pinned_by}</div></div>
+      <button class="btn-sm btn-danger" onclick="doUnpin('${p.id}')">ถอน</button>
+    </div>`).join('');
+  openModal('pinsModal');
+}
+async function doUnpin(pinId){
+  await fetch(`${API}/unpin/${pinId}`,{method:'POST',credentials:'include'});
+  closeModal('pinsModal');showToast('ถอดหมุดแล้ว');
+}
+
 // ===== ADMIN =====
-async function openAdmin() {
-  document.getElementById('adminModal').classList.add('show');
-  try {
-    const res = await fetch(`${API}/admin/users`,{credentials:'include'});
-    const data = await res.json();
-    const ul = document.getElementById('userList');
-    ul.innerHTML='';
-    (data.users||[]).forEach(u=>{
+async function openAdmin(){
+  try{
+    const r=await fetch(`${API}/admin/users`,{credentials:'include'});
+    const d=await r.json();
+    const body=document.getElementById('adminBody');
+    body.innerHTML=`<div style="font-size:13px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:12px">จัดการผู้ใช้</div>`;
+    (d.users||[]).forEach(u=>{
       const div=document.createElement('div');
       div.className='user-row';
-      div.innerHTML=`<div><strong>${u.username}</strong>${u.is_admin?' 👑':''}</div><div style="display:flex;gap:6px"><button class="btn-sm btn-warn" onclick="clearMem('${u.username}')">ล้าง Memory</button>${!u.is_admin?`<button class="btn-sm btn-danger" onclick="delUser('${u.username}')">ลบ</button>`:''}</div>`;
-      ul.appendChild(div);
+      div.innerHTML=`
+        <div style="font-weight:600">${u.username}${u.is_admin?' 👑':''}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm btn-warn" onclick="doClearMem('${u.username}')">ล้าง Memory</button>
+          ${!u.is_admin?`<button class="btn-sm btn-danger" onclick="doDelUser('${u.username}')">ลบ</button>`:''}
+        </div>`;
+      body.appendChild(div);
     });
-  } catch {document.getElementById('userList').textContent='โหลดไม่ได้';}
+    openModal('adminModal');
+  }catch{showToast('โหลดไม่ได้');}
 }
-function closeAdmin(){document.getElementById('adminModal').classList.remove('show');}
-async function clearMem(username){
-  if(!confirm(`ล้าง memory ของ ${username}?`))return;
-  const res=await fetch(`${API}/admin/clear_memory`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
-  if((await res.json()).ok)alert('ล้างแล้ว ✅');
-}
-async function delUser(username){
-  if(!confirm(`ลบบัญชี ${username}?`))return;
-  await fetch(`${API}/admin/delete_user`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
-  openAdmin();await loadUsers();renderSidebar();
+async function doClearMem(u){if(!confirm(`ล้าง memory ของ ${u}?`))return;await fetch(`${API}/admin/clear_memory`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})});showToast('✅ ล้างแล้ว');}
+async function doDelUser(u){if(!confirm(`ลบบัญชี ${u}?`))return;await fetch(`${API}/admin/delete_user`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})});closeModal('adminModal');await loadUsers();renderSidebar();showToast('✅ ลบแล้ว');}
+
+// ===== HELPERS =====
+function toggleSb(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('show');}
+function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+// close modals when clicking overlay
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:9px 18px;border-radius:20px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._timer);t._timer=setTimeout(()=>t.style.opacity='0',2500);
 }
 
-// ===== INIT CHECK SESSION =====
+// ===== CHECK SESSION =====
 (async()=>{
-  try{
-    const res=await fetch(`${API}/me`,{credentials:'include'});
-    const data=await res.json();
-    if(data.logged_in){me=data;initApp();}
-  }catch{}
+  try{const r=await fetch(`${API}/me`,{credentials:'include'});const d=await r.json();if(d.logged_in){me=d;initApp();}}catch{}
 })();
-
 setInterval(checkStatus,30000);
-// poll DM ทุก 5 วินาที
-setInterval(async()=>{
-  if(currentDM){await loadDMHistory(currentDM);}
-},5000);
 </script>
 </body>
 </html>

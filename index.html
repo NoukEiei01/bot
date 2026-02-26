@@ -150,6 +150,50 @@ body { font-family:'Noto Sans Thai',sans-serif; background:var(--bg-primary); co
 .btn-warn { background:var(--warn); color:#000; }
 .btn-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px; }
 .btn-close:hover { color:var(--text-primary); }
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  body { height: 100dvh; }
+
+  /* ซ่อน sidebar และ member list บนมือถือ */
+  .sidebar { display:none; }
+  .member-list { display:none; }
+
+  /* main เต็มจอ */
+  #app { flex-direction:column; }
+  .main { width:100%; height:100dvh; }
+
+  /* header เล็กลง */
+  .chat-header { height:44px; padding:0 12px; }
+
+  /* api bar */
+  .api-bar { padding:4px 12px; font-size:11px; }
+  .model-sel { font-size:11px; }
+
+  /* messages */
+  .messages { padding:8px 0; }
+  .msg-group { padding:2px 10px; gap:10px; }
+  .msg-av { width:34px; height:34px; font-size:14px; }
+  .avatar-col { width:34px; }
+  .msg-uname { font-size:14px; }
+  .msg-text { font-size:14px; }
+
+  /* input area - fix keyboard push */
+  .input-area {
+    padding:8px 10px 12px;
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+  }
+  .input-box { border-radius:20px; padding:0 12px; }
+  .input-box textarea { font-size:16px; padding:10px 0; } /* 16px ป้องกัน zoom */
+  .send-btn { padding:8px 0 8px 8px; }
+
+  /* auth box */
+  .auth-box { padding:24px 20px; margin:16px; border-radius:12px; }
+
+  /* admin panel */
+  .admin-box { margin:16px; max-height:90vh; padding:16px; }
+  .admin-table { font-size:12px; }
+}
 </style>
 </head>
 <body>
@@ -501,3 +545,52 @@ setInterval(checkStatus, 30000);
 </script>
 </body>
 </html>
+<script>
+// Mobile fixes
+function isMobile() { return window.innerWidth <= 768; }
+
+function toggleSidebar() {
+  const sb = document.querySelector('.sidebar');
+  if (sb.style.display === 'flex') {
+    sb.style.display = 'none';
+  } else {
+    sb.style.display = 'flex';
+    sb.style.position = 'fixed';
+    sb.style.left = '0';
+    sb.style.top = '0';
+    sb.style.height = '100dvh';
+    sb.style.zIndex = '40';
+  }
+}
+
+function handleResize() {
+  const menuBtn = document.getElementById('menuBtn');
+  if (menuBtn) menuBtn.style.display = isMobile() ? 'flex' : 'none';
+  if (!isMobile()) {
+    const sb = document.querySelector('.sidebar');
+    if (sb) { sb.style.display = ''; sb.style.position = ''; sb.style.zIndex = ''; }
+  }
+}
+
+// Fix iOS keyboard pushing content
+function fixViewport() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('resize', () => { handleResize(); fixViewport(); });
+window.addEventListener('orientationchange', () => { setTimeout(fixViewport, 300); });
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', (e) => {
+  if (!isMobile()) return;
+  const sb = document.querySelector('.sidebar');
+  const menuBtn = document.getElementById('menuBtn');
+  if (sb && sb.style.position === 'fixed' && !sb.contains(e.target) && e.target !== menuBtn) {
+    sb.style.display = 'none';
+  }
+});
+
+handleResize();
+fixViewport();
+</script>

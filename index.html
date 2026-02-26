@@ -858,8 +858,8 @@ async function doCreateGroup(){
     const r=await fetch(`${API}/groups/create`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,members:checked})});
     const d=await r.json();
     if(d.ok){closeModal('createGroupModal');await loadGroups();selectGroup(d.group);showToast('✅ สร้างกลุ่มแล้ว');}
-    else showToast('❌ '+d.error);
-  }catch{showToast('เชื่อมต่อไม่ได้');}
+    else{showToast('❌ '+(d.error||JSON.stringify(d)));alert('Server error: '+JSON.stringify(d));}
+  }catch(e){showToast('เชื่อมต่อไม่ได้');alert('Fetch error: '+e.message);}
 }
 
 async function openGroupInfo(){

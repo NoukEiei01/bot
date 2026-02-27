@@ -371,7 +371,7 @@ def chat():
         search_ctx = f"\n\n== SEARCH RESULTS ==\n{results}\nAnswer based on these."
 
     messages = [{"role":"system","content":system_prompt+search_ctx}]
-    messages += history[-14:]
+    messages += [{"role": m["role"], "content": m["content"]} for m in history[-14:]]
     messages.append({"role":"user","content":message})
 
     last_error = None

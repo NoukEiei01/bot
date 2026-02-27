@@ -528,6 +528,77 @@ def rename_group(group_id):
     save_group_message(group_id,"system",f"เปลี่ยนชื่อกลุ่มเป็น '{new_name}'")
     return jsonify({"ok":True})
 
+# ===== DELETE MESSAGES =====
+@app.route('/groups/<group_id>/delete_msg/<int:msg_id>', methods=['POST'])
+def delete_group_msg(group_id, msg_id):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not supabase: return jsonify({"error":"No DB"}),500
+    try:
+        msg = supabase.table("group_messages").select("*").eq("id", msg_id).execute()
+        if not msg.data: return jsonify({"error":"ไม่พบข้อความ"}),404
+        m = msg.data[0]
+        if m['sender'] != session['username'] and not session.get('is_admin'):
+            return jsonify({"error":"ไม่มีสิทธิ์ลบ"}),403
+        supabase.table("group_messages").delete().eq("id", msg_id).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+@app.route('/dm/delete_msg/<int:msg_id>', methods=['POST'])
+def delete_dm_msg(msg_id):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    if not supabase: return jsonify({"error":"No DB"}),500
+    try:
+        msg = supabase.table("dm_messages").select("*").eq("id", msg_id).execute()
+        if not msg.data: return jsonify({"error":"ไม่พบข้อความ"}),404
+        m = msg.data[0]
+        if m['sender'] != session['username'] and not session.get('is_admin'):
+            return jsonify({"error":"ไม่มีสิทธิ์ลบ"}),403
+        supabase.table("dm_messages").delete().eq("id", msg_id).execute()
+        return jsonify({"ok":True})
+    except Exception as e: return jsonify({"error":str(e)}),500
+
+# ===== GROUP AI =====
+@app.route('/groups/<group_id>/ask_ai', methods=['POST'])
+def group_ask_ai(group_id):
+    if 'username' not in session: return jsonify({"error":"Unauthorized"}),401
+    group = get_group(group_id)
+    if not group or session['username'] not in (group.get('members') or []): return jsonify({"error":"Unauthorized"}),403
+    if not groq_keys: return jsonify({"error":"No API keys"}),500
+    data = request.json
+    message = data.get('message','').strip()
+    if not message: return jsonify({"error":"No message"}),400
+    username = session['username']
+    is_admin = session.get('is_admin', False)
+    ud = get_memory(username)
+    memory = ud.get("memory","") or ""
+    bot_nickname = ud.get("bot_nickname","") or ""
+    # build context from recent group messages
+    recent = get_group_messages(group_id, 20)
+    ctx = "\n".join([f"{m['sender']}: {m['message']}" for m in recent[-10:]])
+    system_prompt = build_prompt(username, memory, is_admin, bot_nickname)
+    system_prompt += f"\n\n== GROUP CONTEXT ==\nYou are in a group chat called '{group.get('name')}'. Recent messages:\n{ctx}\nRespond to the user's request naturally."
+    messages = [{"role":"system","content":system_prompt}, {"role":"user","content":message}]
+    last_error = None
+    for _ in range(len(groq_keys)):
+        try:
+            client, _ = get_groq_client()
+            response = client.chat.completions.create(model='llama-3.3-70b-versatile', messages=messages, max_tokens=512, temperature=0.85)
+            reply = response.choices[0].message.content
+            if "[MEMORY:" in reply:
+                parts = reply.split("[MEMORY:")
+                reply = parts[0].strip()
+                learned = parts[1].replace("]","").strip()
+                new_memory = memory+"\n- "+learned if memory else "- "+learned
+                save_memory(username, new_memory, ud.get("history",[]), bot_nickname)
+            # save AI reply as group message
+            save_group_message(group_id, BOT_NAME, reply)
+            return jsonify({"ok":True,"reply":reply})
+        except Exception as e:
+            last_error = str(e)
+            if "rate_limit" in str(e).lower() or "429" in str(e): rotate_key()
+            else: break
+    return jsonify({"error":f"Failed: {last_error}"}),500
+
 # ===== REACTIONS =====
 @app.route('/react', methods=['POST'])
 def react():

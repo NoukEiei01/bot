@@ -246,6 +246,7 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
   <div class="ctx-item" id="ctxPinItem" onclick="ctxPin()" style="display:none">📌 Pin</div>
   <div class="ctx-sep"></div>
   <div class="ctx-item" onclick="ctxSearch()">🔍 ค้นหาในห้องนี้</div>
+  <div class="ctx-item danger" id="ctxDeleteItem" onclick="ctxDelete()" style="display:none">🗑️ ลบข้อความ</div>
 </div>
 
 <!-- EMOJI PICKER MODAL -->
@@ -678,12 +679,39 @@ function showCtx(x, y, msgData) {
   ctxMsgData=msgData;
   const menu=document.getElementById('ctxMenu');
   document.getElementById('ctxPinItem').style.display=mode==='group'?'':'none';
+  // show delete if it's own message or admin
+  const canDelete = msgData.sender===me.username || me.is_admin;
+  const hasId = msgData.id && !String(msgData.id).startsWith('t');
+  document.getElementById('ctxDeleteItem').style.display=(canDelete&&hasId&&(mode==='group'||mode==='dm'))?'':'none';
   menu.style.left=Math.min(x,window.innerWidth-180)+'px';
   menu.style.top=Math.min(y,window.innerHeight-200)+'px';
   menu.classList.add('show');
 }
 function hideCtx(){document.getElementById('ctxMenu').classList.remove('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('#ctxMenu'))hideCtx();});
+
+async function ctxDelete(){
+  if(!ctxMsgData||!ctxMsgData.id)return;hideCtx();
+  if(!confirm('ลบข้อความนี้?'))return;
+  const id=ctxMsgData.id;
+  try{
+    let url;
+    if(mode==='group') url=`${API}/groups/${currentGroup.id}/delete_msg/${id}`;
+    else if(mode==='dm') url=`${API}/dm/delete_msg/${id}`;
+    else return;
+    const r=await fetch(url,{method:'POST',credentials:'include'});
+    const d=await r.json();
+    if(d.ok){
+      // remove from DOM
+      const el=document.querySelector(`[data-msg-id="${id}"]`);
+      if(el)el.remove();
+      // remove from history
+      const key=mode==='group'?`grp_${currentGroup.id}`:`dm_${currentDM}`;
+      if(histories[key]) histories[key]=histories[key].filter(m=>m.id!=id);
+      showToast('🗑️ ลบแล้ว');
+    } else showToast('❌ '+(d.error||'ลบไม่ได้'));
+  }catch{showToast('❌ เชื่อมต่อไม่ได้');}
+}
 
 function ctxReply(){
   if(!ctxMsgData)return;hideCtx();
@@ -743,6 +771,29 @@ async function sendMsg() {
       await fetch(`${API}/groups/${currentGroup.id}/send`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,reply_to:rto})});
       setStatus(msgId,'sent');setTimeout(()=>setStatus(msgId,'delivered'),800);
     }catch{setStatus(msgId,'failed');}
+
+    // ===== AI IN GROUP =====
+    const lower=text.toLowerCase();
+    const botTrigger = lower.startsWith('n ') || lower.startsWith(botName.toLowerCase()+' ') || lower.startsWith(botName.toLowerCase()+',');
+    if(botTrigger){
+      // extract the actual message to AI
+      let aiMsg=text;
+      if(lower.startsWith('n ')) aiMsg=text.slice(2).trim();
+      else aiMsg=text.slice(text.indexOf(' ')+1).trim();
+      if(aiMsg){
+        isTyping=true;addBubble({role:'typing',content:''});
+        try{
+          const r=await fetch(`${API}/groups/${currentGroup.id}/ask_ai`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:aiMsg})});
+          document.getElementById('typingBubble')?.remove();
+          const d=await r.json();
+          if(d.reply){
+            const botMsg={id:'ai'+Date.now(),role:'group-other',content:d.reply,sender:botName,created_at:new Date().toISOString()};
+            histories[key].push(botMsg);addBubble(botMsg);
+          } else addBubble({role:'sys',content:'⚠️ '+(d.error||'AI ตอบไม่ได้')});
+        }catch{document.getElementById('typingBubble')?.remove();addBubble({role:'sys',content:'⚠️ AI เชื่อมต่อไม่ได้'});}
+        isTyping=false;
+      }
+    }
 
   } else {
     // AI room

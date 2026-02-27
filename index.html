@@ -415,7 +415,7 @@ let unreadCounts = {};
 let isTyping = false;
 let botName = 'Nouk_Bot';
 let replyTo = null; // {id, text}
-let groupAiOn = false; // AI toggle in group
+
 let ctxMsgData = null; // current context menu target
 let longPressTimer = null;
 
@@ -765,16 +765,6 @@ function updateAIBtn(){
   btn.title=groupAIOn?'AI เปิดอยู่ (กดปิด)':'AI ปิดอยู่ (กดเปิด)';
 }
 
-function toggleAI(){
-  groupAiOn=!groupAiOn;
-  updateAIBtn();
-  showToast(groupAiOn?'🤖 AI เปิดอยู่ — ข้อความถัดไปจะถาม AI':'🤖 AI ปิดแล้ว');
-}
-function updateAIBtn(){
-  const btn=document.getElementById('aiToggleBtn');
-  if(groupAiOn){btn.classList.add('on');btn.classList.remove('off');}
-  else{btn.classList.remove('on');btn.classList.add('off');}
-}
 
 // ===== SEND =====
 async function sendMsg() {

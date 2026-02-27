@@ -174,6 +174,13 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
 .send-btn{width:44px;height:44px;border-radius:50%;background:var(--c1);color:#fff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;}
 .send-btn:active{background:var(--c1d);transform:scale(.9);}
 .send-btn:disabled{background:#ccc;cursor:default;transform:none;}
+.ai-toggle-btn{width:44px;height:44px;border-radius:50%;background:var(--bg);border:2px solid var(--border);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;opacity:.5;}
+.ai-toggle-btn.active{background:var(--c1l);border-color:var(--c1);opacity:1;}
+.ai-toggle-btn:active{transform:scale(.9);}
+.ai-toggle-btn{width:44px;height:44px;border-radius:50%;background:var(--bg);border:2px solid var(--border);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.ai-toggle-btn:active{transform:scale(.9);}
+.ai-toggle-btn.on{background:var(--c1);border-color:var(--c1);filter:none;}
+.ai-toggle-btn.off{filter:grayscale(1);opacity:.5;}
 
 /* modals */
 .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;padding:0;}
@@ -382,6 +389,7 @@ body{font-family:'Noto Sans Thai',-apple-system,sans-serif;font-size:15px;color:
         <div class="input-row">
           <textarea class="msg-inp" id="msgInp" placeholder="พิมพ์ข้อความ..." rows="1"
             onkeydown="handleKey(event)" oninput="autoResize(this)" readonly></textarea>
+          <button class="ai-toggle-btn" id="aiToggleBtn" onclick="toggleAI()" title="เปิด/ปิด AI" style="display:none">🤖</button>
           <button class="send-btn" id="sendBtn" onclick="sendMsg()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
@@ -407,6 +415,7 @@ let unreadCounts = {};
 let isTyping = false;
 let botName = 'Nouk_Bot';
 let replyTo = null; // {id, text}
+let groupAiOn = false; // AI toggle in group
 let ctxMsgData = null; // current context menu target
 let longPressTimer = null;
 
@@ -574,6 +583,7 @@ function selectRoom(r) {
   document.getElementById('groupInfoBtn').style.display='none';
   document.getElementById('modelSel').style.display='';
   document.getElementById('msgInp').placeholder=`พิมพ์ข้อความ...`;
+  document.getElementById('aiToggleBtn').style.display='none';
   renderSidebar();renderMessages();
 }
 
@@ -588,6 +598,7 @@ async function selectDM(username) {
   document.getElementById('groupInfoBtn').style.display='none';
   document.getElementById('modelSel').style.display='none';
   document.getElementById('msgInp').placeholder=`ส่งข้อความหา ${username}...`;
+  document.getElementById('aiToggleBtn').style.display='none';
   renderSidebar();
   await pollDM();
 }
@@ -602,6 +613,8 @@ async function selectGroup(g) {
   document.getElementById('groupInfoBtn').style.display='';
   document.getElementById('modelSel').style.display='none';
   document.getElementById('msgInp').placeholder=`ส่งข้อความในกลุ่ม ${g.name}...`;
+  document.getElementById('aiToggleBtn').style.display='';
+  updateAIBtn();
   renderSidebar();
   await pollGroup();
 }
@@ -738,6 +751,31 @@ async function pickEmoji(emoji) {
 
 function cancelReply(){replyTo=null;document.getElementById('replyBar').classList.remove('show');}
 
+// ===== GROUP AI TOGGLE =====
+let groupAIOn = false;
+function toggleAI(){
+  groupAIOn=!groupAIOn;
+  updateAIBtn();
+  showToast(groupAIOn?'🤖 AI เปิดอยู่ — ส่งข้อความเลย':'🤖 AI ปิดแล้ว');
+}
+function updateAIBtn(){
+  const btn=document.getElementById('aiToggleBtn');
+  if(!btn)return;
+  btn.classList.toggle('active',groupAIOn);
+  btn.title=groupAIOn?'AI เปิดอยู่ (กดปิด)':'AI ปิดอยู่ (กดเปิด)';
+}
+
+function toggleAI(){
+  groupAiOn=!groupAiOn;
+  updateAIBtn();
+  showToast(groupAiOn?'🤖 AI เปิดอยู่ — ข้อความถัดไปจะถาม AI':'🤖 AI ปิดแล้ว');
+}
+function updateAIBtn(){
+  const btn=document.getElementById('aiToggleBtn');
+  if(groupAiOn){btn.classList.add('on');btn.classList.remove('off');}
+  else{btn.classList.remove('on');btn.classList.add('off');}
+}
+
 // ===== SEND =====
 async function sendMsg() {
   const inp=document.getElementById('msgInp');
@@ -773,26 +811,18 @@ async function sendMsg() {
     }catch{setStatus(msgId,'failed');}
 
     // ===== AI IN GROUP =====
-    const lower=text.toLowerCase();
-    const botTrigger = lower.startsWith('n ') || lower.startsWith(botName.toLowerCase()+' ') || lower.startsWith(botName.toLowerCase()+',');
-    if(botTrigger){
-      // extract the actual message to AI
-      let aiMsg=text;
-      if(lower.startsWith('n ')) aiMsg=text.slice(2).trim();
-      else aiMsg=text.slice(text.indexOf(' ')+1).trim();
-      if(aiMsg){
-        isTyping=true;addBubble({role:'typing',content:''});
-        try{
-          const r=await fetch(`${API}/groups/${currentGroup.id}/ask_ai`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:aiMsg})});
-          document.getElementById('typingBubble')?.remove();
-          const d=await r.json();
-          if(d.reply){
-            const botMsg={id:'ai'+Date.now(),role:'group-other',content:d.reply,sender:botName,created_at:new Date().toISOString()};
-            histories[key].push(botMsg);addBubble(botMsg);
-          } else addBubble({role:'sys',content:'⚠️ '+(d.error||'AI ตอบไม่ได้')});
-        }catch{document.getElementById('typingBubble')?.remove();addBubble({role:'sys',content:'⚠️ AI เชื่อมต่อไม่ได้'});}
-        isTyping=false;
-      }
+    if(groupAIOn){
+      isTyping=true;addBubble({role:'typing',content:''});
+      try{
+        const r=await fetch(`${API}/groups/${currentGroup.id}/ask_ai`,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});
+        document.getElementById('typingBubble')?.remove();
+        const d=await r.json();
+        if(d.reply){
+          const botMsg={id:'ai'+Date.now(),role:'group-other',content:d.reply,sender:botName,created_at:new Date().toISOString()};
+          histories[key].push(botMsg);addBubble(botMsg);
+        } else addBubble({role:'sys',content:'⚠️ '+(d.error||'AI ตอบไม่ได้')});
+      }catch{document.getElementById('typingBubble')?.remove();addBubble({role:'sys',content:'⚠️ AI เชื่อมต่อไม่ได้'});}
+      isTyping=false;
     }
 
   } else {
